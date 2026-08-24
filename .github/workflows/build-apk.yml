@@ -5,12 +5,12 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,18 +18,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.4'
+          node-version: '22'
           cache: 'npm'
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'zulu'
+          java-version: '21'
           cache: 'gradle'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
       - name: Install npm dependencies
         run: npm ci
@@ -49,25 +52,26 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x android/gradlew
 
-      - name: Build APK (Assemble Release)
+      - name: Build APK
         working-directory: android
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: mpesa-app-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: mpesa-app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
 
-      - name: Prepare release APK
-        run: cp android/app/build/outputs/apk/release/app-release.apk mpesa.apk
+      - name: Rename APK
+        run: mv android/app/build/outputs/apk/debug/app-debug.apk mpesa.apk
 
-      - name: Publish latest APK release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest-apk
-          name: Latest Android APK
-          body: "Latest Android APK built from main."
+          tag_name: "v1.0.${{ github.run_number }}"
+          name: "M-PESA Android APK (Build ${{ github.run_number }})"
           files: mpesa.apk
           make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

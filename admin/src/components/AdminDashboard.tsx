@@ -29,7 +29,7 @@ type AccountForm = {
 };
 
 const emptyForm: AccountForm = { name: '', phoneNumber: '', pin: '', balance: '' };
-const APK_DOWNLOAD_URL = 'https://github.com/Tiko4Ted/mpesa-app/releases/download/latest-apk/mpesa.apk';
+const APK_DOWNLOAD_URL = 'https://github.com/Tiko4Ted/mpesa-app/releases/latest/download/mpesa.apk';
 
 export default function AdminDashboard({ initialAccounts }: { initialAccounts: Account[] }) {
   const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
