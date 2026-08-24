@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { ADMIN_SESSION_COOKIE, isAdminSessionTokenValid } from '@/lib/admin-auth';
 import prisma from '@/lib/prisma';
 
+const ensureAdmin = async () => {
+  const cookieStore = await cookies();
+  return isAdminSessionTokenValid(cookieStore.get(ADMIN_SESSION_COOKIE)?.value);
+};
+
 export async function GET() {
+  if (!(await ensureAdmin())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const accounts = await prisma.account.findMany({
       orderBy: { createdAt: 'desc' },
@@ -14,6 +25,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!(await ensureAdmin())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { name, phoneNumber, pin, balance } = await request.json();
 
@@ -31,9 +46,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, account: newAccount }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Create account error:', error);
-    if (error.code === 'P2002') {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({ error: 'Phone number already exists' }, { status: 400 });
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
