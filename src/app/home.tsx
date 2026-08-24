@@ -134,10 +134,34 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
-        <Ionicons name="qr-code-outline" size={24} color="#34C759" />
-        <Text style={styles.fabText}>Scan to pay</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomNavContainer}>
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navItem}>
+            <Image source={require('../../assets/images/icons/assets_images_icons_iconhomedark.png')} style={styles.navIcon} />
+            <Text style={[styles.navText, styles.navTextActive]}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <Image source={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} style={styles.navIcon} />
+            <Text style={styles.navText}>Discover</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.navSpacer} />
+          
+          <TouchableOpacity style={styles.navItem}>
+            <Image source={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} style={styles.navIcon} />
+            <Text style={styles.navText}>Zuri</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <Image source={require('../../assets/images/icons/assets_images_icons_domoredark.png')} style={styles.navIcon} />
+            <Text style={styles.navText}>Services</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+          <Image source={require('../../assets/images/icons/assets_images_icons_scanicon.png')} style={styles.fabIcon} />
+          <Text style={styles.fabText}>Scan to pay</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -305,11 +329,51 @@ const styles = StyleSheet.create({
     marginTop: 12,
     resizeMode: 'cover',
   },
+  bottomNavContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    backgroundColor: '#1C1C1E',
+    marginHorizontal: 20,
+    borderRadius: 30,
+    height: 70,
+    paddingHorizontal: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '90%',
+  },
+  navItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 60,
+  },
+  navIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    marginBottom: 4,
+  },
+  navText: {
+    color: '#888888',
+    fontSize: 10,
+  },
+  navTextActive: {
+    color: '#00CC66',
+    fontWeight: 'bold',
+  },
+  navSpacer: {
+    width: 80, // Space for the center FAB
+  },
   fab: {
     position: 'absolute',
-    bottom: 30,
-    right: 20,
-    backgroundColor: '#252528',
+    top: -20,
+    backgroundColor: '#34C759',
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
@@ -321,9 +385,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
   },
+  fabIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
   fabText: {
-    color: '#FFFFFF',
+    color: '#000000',
     marginLeft: 8,
-    fontWeight: '600',
+    fontWeight: 'bold',
   }
 });
