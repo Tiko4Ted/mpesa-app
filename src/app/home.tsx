@@ -112,15 +112,15 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.grid}>
-            <QuickActionIcon title="Send\nMoney" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconsenddark.png') : require('../../assets/images/icons/assets_images_icons_iconsend.png')} href="/send-money" />
-            <QuickActionIcon title="Lipa na M-\nPESA" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconlipadark.png') : require('../../assets/images/icons/assets_images_icons_iconlipa.png')} href="/lipa-na-mpesa" />
-            <QuickActionIcon title="Withdraw\nMoney" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png') : require('../../assets/images/icons/assets_images_icons_iconwithdraw.png')} href="/withdraw" />
-            <QuickActionIcon title="Buy\nBundles" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png') : require('../../assets/images/icons/assets_images_icons_iconbundles.png')} href="/buy-bundles" />
+            <QuickActionIcon title={"Send\nMoney"} localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconsenddark.png') : require('../../assets/images/icons/assets_images_icons_iconsend.png')} href="/send-money" />
+            <QuickActionIcon title={"Lipa na M-\nPESA"} localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconlipadark.png') : require('../../assets/images/icons/assets_images_icons_iconlipa.png')} href="/lipa-na-mpesa" />
+            <QuickActionIcon title={"Withdraw\nMoney"} localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png') : require('../../assets/images/icons/assets_images_icons_iconwithdraw.png')} href="/withdraw" />
+            <QuickActionIcon title={"Buy\nBundles"} localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png') : require('../../assets/images/icons/assets_images_icons_iconbundles.png')} href="/buy-bundles" />
             
-            <QuickActionIcon title="Airtime Top\nup" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconairtimedark.png') : require('../../assets/images/icons/assets_images_icons_iconairtime.png')} href="/airtime" />
+            <QuickActionIcon title={"Airtime Top\nup"} localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconairtimedark.png') : require('../../assets/images/icons/assets_images_icons_iconairtime.png')} href="/airtime" />
             <QuickActionIcon title="Global" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconintldark.png') : require('../../assets/images/icons/assets_images_icons_iconintl.png')} href="/global" />
             <QuickActionIcon 
-              title="Pochi\nWallet" 
+              title={"Pochi\nWallet"} 
               href="/pochi"
               customIcon={
                 <View>
@@ -129,7 +129,7 @@ export default function HomeScreen() {
                 </View>
               } 
             />
-            <QuickActionIcon title="Add\nAction" iconName="plus" iconFamily="Feather" color="#FF3B30" href="/add-action" />
+            <QuickActionIcon title={"Add\nAction"} iconName="plus" iconFamily="Feather" color="#FF3B30" href="/add-action" />
           </View>
         </View>
 
