@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, RefreshControl, Dimensions, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import BalanceCard from '../components/BalanceCard';
@@ -7,9 +7,40 @@ import QuickActionIcon from '../components/QuickActionIcon';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark' || colorScheme == null; // default to dark if null
+  const styles = getStyles(isDark);
+  
+  const [greeting, setGreeting] = useState('Good afternoon,');
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeSegment, setActiveSegment] = useState('Apps');
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good morning,');
+    else if (hour < 18) setGreeting('Good afternoon,');
+    else setGreeting('Good evening,');
+  }, []);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  const handleScroll = (event: any) => {
+    const slideSize = event.nativeEvent.layoutMeasurement.width;
+    const index = event.nativeEvent.contentOffset.x / slideSize;
+    setActiveIndex(Math.round(index));
+  };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00CC66" />}
+      >
         
         {/* Header */}
         <View style={styles.header}>
@@ -24,7 +55,7 @@ export default function HomeScreen() {
               </View>
             </View>
             <View>
-              <Text style={styles.greeting}>Good afternoon,</Text>
+              <Text style={styles.greeting}>{greeting}</Text>
               <Text style={styles.name}>Teddy 👋</Text>
             </View>
           </View>
@@ -47,6 +78,9 @@ export default function HomeScreen() {
           horizontal 
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.balancesContainer}
+          pagingEnabled
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
         >
           <BalanceCard 
             title="M-PESA Balance"
@@ -62,8 +96,8 @@ export default function HomeScreen() {
           />
         </ScrollView>
         <View style={styles.pagination}>
-          <View style={[styles.dot, styles.activeDot]} />
-          <View style={styles.dot} />
+          <View style={[styles.dot, activeIndex === 0 && styles.activeDot]} />
+          <View style={[styles.dot, activeIndex === 1 && styles.activeDot]} />
         </View>
 
         {/* Quick Actions */}
@@ -76,13 +110,13 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.grid}>
-            <QuickActionIcon title="Send\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconsenddark.png')} href="/send-money" />
-            <QuickActionIcon title="Lipa na M-\nPESA" localImage={require('../../assets/images/icons/assets_images_icons_iconlipadark.png')} href="/lipa-na-mpesa" />
-            <QuickActionIcon title="Withdraw\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png')} href="/withdraw" />
-            <QuickActionIcon title="Buy\nBundles" localImage={require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png')} href="/buy-bundles" />
+            <QuickActionIcon title="Send\nMoney" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconsenddark.png') : require('../../assets/images/icons/assets_images_icons_iconsend.png')} href="/send-money" />
+            <QuickActionIcon title="Lipa na M-\nPESA" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconlipadark.png') : require('../../assets/images/icons/assets_images_icons_iconlipa.png')} href="/lipa-na-mpesa" />
+            <QuickActionIcon title="Withdraw\nMoney" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png') : require('../../assets/images/icons/assets_images_icons_iconwithdraw.png')} href="/withdraw" />
+            <QuickActionIcon title="Buy\nBundles" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png') : require('../../assets/images/icons/assets_images_icons_iconbundles.png')} href="/buy-bundles" />
             
-            <QuickActionIcon title="Airtime Top\nup" localImage={require('../../assets/images/icons/assets_images_icons_iconairtimedark.png')} href="/airtime" />
-            <QuickActionIcon title="Global" localImage={require('../../assets/images/icons/assets_images_icons_iconintldark.png')} href="/global" />
+            <QuickActionIcon title="Airtime Top\nup" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconairtimedark.png') : require('../../assets/images/icons/assets_images_icons_iconairtime.png')} href="/airtime" />
+            <QuickActionIcon title="Global" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_iconintldark.png') : require('../../assets/images/icons/assets_images_icons_iconintl.png')} href="/global" />
             <QuickActionIcon 
               title="Pochi\nWallet" 
               href="/pochi"
@@ -97,6 +131,29 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        {/* My Spend */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>My Spend</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>Check your spend {'>'}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.spendCard}>
+            <Text style={styles.spendAmount}>Ksh 4,500.00</Text>
+            <Text style={styles.spendSubtitle}>Total spend this week</Text>
+            <View style={styles.chartMock}>
+              <View style={[styles.bar, { height: 30 }]} />
+              <View style={[styles.bar, { height: 50 }]} />
+              <View style={[styles.bar, { height: 20 }]} />
+              <View style={[styles.bar, { height: 80, backgroundColor: '#00CC66' }]} />
+              <View style={[styles.bar, { height: 40 }]} />
+              <View style={[styles.bar, { height: 10 }]} />
+              <View style={[styles.bar, { height: 60 }]} />
+            </View>
+          </View>
+        </View>
+
         {/* Frequents */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
@@ -107,19 +164,52 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.segmentedControl}>
-            <View style={styles.activeSegment}>
-              <Text style={styles.activeSegmentText}>Apps</Text>
-            </View>
-            <Text style={styles.segmentText}>Send</Text>
-            <Text style={styles.segmentText}>Pay</Text>
-            <Text style={styles.segmentText}>Bundles</Text>
+            {['Apps', 'Send', 'Pay', 'Bundles'].map((segment) => (
+              <TouchableOpacity 
+                key={segment}
+                style={activeSegment === segment ? styles.activeSegment : styles.inactiveSegment}
+                onPress={() => setActiveSegment(segment)}
+              >
+                <Text style={activeSegment === segment ? styles.activeSegmentText : styles.segmentText}>
+                  {segment}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
 
           <View style={styles.frequentsRow}>
-            <QuickActionIcon title="Tunukiwa" localImage={require('../../assets/images/icons/assets_images_icons_icontunukiwadark.png')} href="/tunukiwa" />
-            <QuickActionIcon title="Zuri" localImage={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} href="/zuri" />
-            <QuickActionIcon title="Explore" localImage={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} href="/explore" />
-            <QuickActionIcon title="Do More" localImage={require('../../assets/images/icons/assets_images_icons_domoredark.png')} href="/services" />
+            {activeSegment === 'Apps' && (
+              <>
+                <QuickActionIcon title="Tunukiwa" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_icontunukiwadark.png') : require('../../assets/images/icons/assets_images_icons_icontunukiwa.png')} href="/tunukiwa" />
+                <QuickActionIcon title="Zuri" localImage={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} href="/zuri" />
+                <QuickActionIcon title="Explore" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_exploreicondark.png') : require('../../assets/images/icons/assets_images_icons_exploreicon.png')} href="/explore" />
+                <QuickActionIcon title="Do More" localImage={isDark ? require('../../assets/images/icons/assets_images_icons_domoredark.png') : require('../../assets/images/icons/assets_images_icons_domore.png')} href="/services" />
+              </>
+            )}
+            {activeSegment === 'Send' && (
+              <>
+                <QuickActionIcon title="Mom" iconName="person" iconFamily="Ionicons" href="/send-money" />
+                <QuickActionIcon title="Dad" iconName="person" iconFamily="Ionicons" href="/send-money" />
+                <QuickActionIcon title="John" iconName="person" iconFamily="Ionicons" href="/send-money" />
+                <QuickActionIcon title="Jane" iconName="person" iconFamily="Ionicons" href="/send-money" />
+              </>
+            )}
+            {activeSegment === 'Pay' && (
+              <>
+                <QuickActionIcon title="Naivas" iconName="cart" iconFamily="Ionicons" href="/lipa-na-mpesa" />
+                <QuickActionIcon title="KPLC" iconName="bulb" iconFamily="Ionicons" href="/lipa-na-mpesa" />
+                <QuickActionIcon title="Water" iconName="water" iconFamily="Ionicons" href="/lipa-na-mpesa" />
+                <QuickActionIcon title="DSTV" iconName="tv" iconFamily="Ionicons" href="/lipa-na-mpesa" />
+              </>
+            )}
+            {activeSegment === 'Bundles' && (
+              <>
+                <QuickActionIcon title="Daily" iconName="cellular" iconFamily="Ionicons" href="/buy-bundles" />
+                <QuickActionIcon title="Weekly" iconName="cellular" iconFamily="Ionicons" href="/buy-bundles" />
+                <QuickActionIcon title="Monthly" iconName="cellular" iconFamily="Ionicons" href="/buy-bundles" />
+                <QuickActionIcon title="Gomoka" iconName="cellular" iconFamily="Ionicons" href="/buy-bundles" />
+              </>
+            )}
           </View>
         </View>
 
@@ -127,7 +217,7 @@ export default function HomeScreen() {
         <View style={styles.dealsSection}>
           <Text style={styles.sectionTitle}>Explore & Discover</Text>
           <Image 
-            source={require('../../assets/images/icons/assets_images_icons_entertainmentbannerdark.png')} 
+            source={isDark ? require('../../assets/images/icons/assets_images_icons_entertainmentbannerdark.png') : require('../../assets/images/icons/assets_images_icons_entertainmentbanner.png')} 
             style={styles.dealBannerImage} 
           />
         </View>
@@ -141,13 +231,13 @@ export default function HomeScreen() {
         <View style={styles.bottomNav}>
           <Link href="/home" asChild>
             <TouchableOpacity style={styles.navItem}>
-              <Image source={require('../../assets/images/icons/assets_images_icons_iconhomedark.png')} style={styles.navIcon} />
+              <Image source={isDark ? require('../../assets/images/icons/assets_images_icons_iconhomedark.png') : require('../../assets/images/icons/assets_images_icons_iconhome.png')} style={styles.navIcon} />
               <Text style={[styles.navText, styles.navTextActive]}>Home</Text>
             </TouchableOpacity>
           </Link>
           <Link href="/discover" asChild>
             <TouchableOpacity style={styles.navItem}>
-              <Image source={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} style={styles.navIcon} />
+              <Image source={isDark ? require('../../assets/images/icons/assets_images_icons_exploreicondark.png') : require('../../assets/images/icons/assets_images_icons_exploreicon.png')} style={styles.navIcon} />
               <Text style={styles.navText}>Discover</Text>
             </TouchableOpacity>
           </Link>
@@ -162,7 +252,7 @@ export default function HomeScreen() {
           </Link>
           <Link href="/services" asChild>
             <TouchableOpacity style={styles.navItem}>
-              <Image source={require('../../assets/images/icons/assets_images_icons_domoredark.png')} style={styles.navIcon} />
+              <Image source={isDark ? require('../../assets/images/icons/assets_images_icons_domoredark.png') : require('../../assets/images/icons/assets_images_icons_domore.png')} style={styles.navIcon} />
               <Text style={styles.navText}>Services</Text>
             </TouchableOpacity>
           </Link>
@@ -179,10 +269,10 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111111',
+    backgroundColor: isDark ? '#111111' : '#F5F7FA',
   },
   scrollContent: {
     paddingBottom: 20,
@@ -218,14 +308,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#111111',
+    borderColor: isDark ? '#111111' : '#F5F7FA',
   },
   greeting: {
-    color: '#888888',
+    color: isDark ? '#888888' : '#555555',
     fontSize: 13,
   },
   name: {
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -237,7 +327,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: isDark ? '#1C1C1E' : '#E5E5EA',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -271,13 +361,13 @@ const styles = StyleSheet.create({
     width: 16,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#333333',
+    backgroundColor: isDark ? '#333333' : '#D1D1D6',
   },
   activeDot: {
     backgroundColor: '#34C759',
   },
   sectionContainer: {
-    backgroundColor: '#1C1C1E',
+    backgroundColor: isDark ? '#1C1C1E' : '#FFFFFF',
     marginHorizontal: 20,
     borderRadius: 16,
     padding: 16,
@@ -290,7 +380,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -304,9 +394,35 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginHorizontal: -8,
   },
+  spendCard: {
+    marginTop: 8,
+  },
+  spendAmount: {
+    color: isDark ? '#FFFFFF' : '#000000',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  spendSubtitle: {
+    color: isDark ? '#888888' : '#555555',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  chartMock: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    height: 80,
+    marginTop: 20,
+    paddingHorizontal: 10,
+  },
+  bar: {
+    width: 24,
+    backgroundColor: isDark ? '#333333' : '#E5E5EA',
+    borderRadius: 4,
+  },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#202022',
+    backgroundColor: isDark ? '#202022' : '#F2F2F7',
     borderRadius: 24,
     padding: 4,
     marginBottom: 20,
@@ -316,16 +432,21 @@ const styles = StyleSheet.create({
   activeSegment: {
     backgroundColor: '#00CC66',
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  inactiveSegment: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 20,
   },
   activeSegmentText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: isDark ? '#111111' : '#FFFFFF',
+    fontWeight: 'bold',
   },
   segmentText: {
-    color: '#AAAAAA',
-    paddingHorizontal: 16,
+    color: isDark ? '#AAAAAA' : '#555555',
+    fontWeight: '500',
   },
   frequentsRow: {
     flexDirection: 'row',
@@ -352,7 +473,7 @@ const styles = StyleSheet.create({
   },
   bottomNav: {
     flexDirection: 'row',
-    backgroundColor: '#1C1C1E',
+    backgroundColor: isDark ? '#1C1C1E' : '#FFFFFF',
     marginHorizontal: 20,
     borderRadius: 30,
     height: 70,
@@ -360,6 +481,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '90%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: isDark ? 0 : 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   navItem: {
     alignItems: 'center',
@@ -373,7 +499,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   navText: {
-    color: '#888888',
+    color: isDark ? '#888888' : '#8E8E93',
     fontSize: 10,
   },
   navTextActive: {
@@ -404,7 +530,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   fabText: {
-    color: '#000000',
+    color: isDark ? '#000000' : '#FFFFFF',
     marginLeft: 8,
     fontWeight: 'bold',
   }

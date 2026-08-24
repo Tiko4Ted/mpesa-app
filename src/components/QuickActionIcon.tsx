@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, useColorScheme } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 
 import { useRouter } from 'expo-router';
@@ -24,6 +24,9 @@ export default function QuickActionIcon({
   href
 }: QuickActionIconProps) {
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark' || colorScheme == null;
+  const styles = getStyles(isDark);
   
   const IconComponent = iconFamily === 'MaterialCommunityIcons' ? MaterialCommunityIcons : iconFamily === 'Feather' ? Feather : Ionicons;
 
@@ -51,7 +54,7 @@ export default function QuickActionIcon({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark: boolean) => StyleSheet.create({
   container: {
     width: '25%',
     alignItems: 'center',
@@ -61,13 +64,13 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#202022',
+    backgroundColor: isDark ? '#202022' : '#E5E5EA',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
   },
   title: {
-    color: '#E0E0E0',
+    color: isDark ? '#E0E0E0' : '#333333',
     fontSize: 11,
     textAlign: 'center',
     paddingHorizontal: 2,
