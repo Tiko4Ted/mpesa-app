@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import BalanceCard from '../components/BalanceCard';
 import QuickActionIcon from '../components/QuickActionIcon';
+import { getUserSession, UserSession } from '../lib/storage';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -17,12 +18,19 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeSegment, setActiveSegment] = useState('Apps');
+  const [session, setSession] = useState<UserSession | null>(null);
 
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Good morning,');
     else if (hour < 18) setGreeting('Good afternoon,');
     else setGreeting('Good evening,');
+    
+    const fetchSession = async () => {
+      const userSession = await getUserSession();
+      setSession(userSession);
+    };
+    fetchSession();
   }, []);
 
   const onRefresh = React.useCallback(() => {
@@ -48,17 +56,18 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.profileInfo}>
             <View style={styles.avatarContainer}>
-              <Image 
-                source={{ uri: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80' }} 
-                style={styles.avatar} 
-              />
+              <View style={[styles.avatar, { backgroundColor: isDark ? '#333' : '#E5E5EA', justifyContent: 'center', alignItems: 'center' }]}>
+                <Text style={{ fontSize: 24, fontWeight: 'bold', color: isDark ? '#FFF' : '#333' }}>
+                  {session ? session.name.charAt(0).toUpperCase() : 'T'}
+                </Text>
+              </View>
               <View style={styles.badge}>
                 <Ionicons name="checkmark" size={10} color="#00CC66" />
               </View>
             </View>
             <View>
               <Text style={styles.greeting}>{greeting}</Text>
-              <Text style={styles.name}>Teddy 👋</Text>
+              <Text style={styles.name}>{session ? session.name.split(' ')[0] : 'Teddy'} 👋</Text>
             </View>
           </View>
           
@@ -86,7 +95,7 @@ export default function HomeScreen() {
         >
           <BalanceCard 
             title="M-PESA Balance"
-            balance="Ksh 0.00"
+            balance={session ? 'Ksh ' + session.balance.toLocaleString(undefined, {minimumFractionDigits: 2}) : 'Ksh 0.00'}
             fuliza="Ksh 420.30"
             gradientColors={['#00CC66', '#00C6FF']}
           />
