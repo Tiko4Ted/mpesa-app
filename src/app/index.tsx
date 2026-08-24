@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Image, SafeAreaView, useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PinInput from '../components/PinInput';
 import Keypad from '../components/Keypad';
 
 export default function LoginScreen() {
   const [pin, setPin] = useState('');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark' || colorScheme == null;
+  const styles = getStyles(isDark);
 
   useEffect(() => {
     if (pin.length === 4) {
@@ -30,7 +35,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Enter your M-PESA PIN</Text>
       </View>
@@ -56,10 +61,10 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111111',
+    backgroundColor: isDark ? '#111111' : '#F5F7FA',
   },
   header: {
     alignItems: 'center',
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerText: {
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -81,7 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: '#333333',
+    borderColor: isDark ? '#333333' : '#E5E5EA',
     marginBottom: 16,
   },
   avatar: {
@@ -89,20 +94,20 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   name: {
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 6,
   },
   phone: {
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontSize: 14,
   },
   phoneLabel: {
-    color: '#AAAAAA',
+    color: isDark ? '#AAAAAA' : '#555555',
     fontWeight: '600',
   },
   phoneNumber: {
-    color: '#DDDDDD',
+    color: isDark ? '#DDDDDD' : '#333333',
   }
 });
