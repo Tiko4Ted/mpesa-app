@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, RefreshControl, Dimensions, useColorScheme } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import BalanceCard from '../components/BalanceCard';
@@ -10,6 +11,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark' || colorScheme == null; // default to dark if null
   const styles = getStyles(isDark);
+  const insets = useSafeAreaInsets();
   
   const [greeting, setGreeting] = useState('Good afternoon,');
   const [refreshing, setRefreshing] = useState(false);
@@ -36,7 +38,7 @@ export default function HomeScreen() {
     setActiveIndex(Math.round(index));
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00CC66" />}
