@@ -122,10 +122,11 @@ export default function HomeScreen() {
 
         {/* Deals */}
         <View style={styles.dealsSection}>
-          <Text style={styles.sectionTitle}>Explore & Discover Deals 🔥</Text>
-          <View style={styles.dealBanner}>
-            <Text style={styles.dealBannerText}>BATA</Text>
-          </View>
+          <Text style={styles.sectionTitle}>Explore & Discover</Text>
+          <Image 
+            source={require('../../assets/images/icons/assets_images_icons_entertainmentbannerdark.png')} 
+            style={styles.dealBannerImage} 
+          />
         </View>
         
         {/* Spacer for floating button */}
@@ -297,18 +298,12 @@ const styles = StyleSheet.create({
   dealsSection: {
     paddingHorizontal: 20,
   },
-  dealBanner: {
-    backgroundColor: '#00CC66',
-    height: 100,
+  dealBannerImage: {
+    width: '100%',
+    height: 120,
     borderRadius: 16,
     marginTop: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dealBannerText: {
-    color: '#000000',
-    fontSize: 24,
-    fontWeight: 'bold',
+    resizeMode: 'cover',
   },
   fab: {
     position: 'absolute',
