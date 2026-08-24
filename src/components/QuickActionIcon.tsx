@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 
 interface QuickActionIconProps {
@@ -8,6 +8,7 @@ interface QuickActionIconProps {
   iconFamily?: 'Ionicons' | 'MaterialCommunityIcons' | 'Feather';
   color?: string;
   customIcon?: React.ReactNode;
+  localImage?: any;
 }
 
 export default function QuickActionIcon({ 
@@ -15,7 +16,8 @@ export default function QuickActionIcon({
   iconName, 
   iconFamily = 'Ionicons',
   color = '#00CC66',
-  customIcon
+  customIcon,
+  localImage
 }: QuickActionIconProps) {
   
   const IconComponent = iconFamily === 'MaterialCommunityIcons' ? MaterialCommunityIcons : iconFamily === 'Feather' ? Feather : Ionicons;
@@ -23,7 +25,13 @@ export default function QuickActionIcon({
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7}>
       <View style={styles.iconContainer}>
-        {customIcon ? customIcon : <IconComponent name={iconName} size={26} color={color} strokeWidth={1} />}
+        {localImage ? (
+          <Image source={localImage} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
+        ) : customIcon ? (
+          customIcon
+        ) : (
+          <IconComponent name={iconName} size={26} color={color} strokeWidth={1} />
+        )}
       </View>
       <Text style={styles.title} numberOfLines={2}>
         {title}

@@ -74,21 +74,13 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.grid}>
-            <QuickActionIcon title="Send\nMoney" iconName="send" iconFamily="Feather" />
-            <QuickActionIcon title="Lipa na M-\nPESA" iconName="basket-outline" iconFamily="MaterialCommunityIcons" />
-            <QuickActionIcon 
-              title="Withdraw\nMoney" 
-              customIcon={
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Ionicons name="wallet-outline" size={24} color="#00CC66" />
-                  <Ionicons name="arrow-down" size={14} color="#FF3B30" style={{ marginLeft: -6, marginTop: 10 }} />
-                </View>
-              } 
-            />
-            <QuickActionIcon title="Buy\nBundles" iconName="swap-vertical" iconFamily="Ionicons" />
+            <QuickActionIcon title="Send\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconsend.png')} />
+            <QuickActionIcon title="Lipa na M-\nPESA" localImage={require('../../assets/images/icons/assets_images_icons_iconlipa.png')} />
+            <QuickActionIcon title="Withdraw\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconwithdraw.png')} />
+            <QuickActionIcon title="Buy\nBundles" localImage={require('../../assets/images/icons/assets_images_icons_iconbundles.png')} />
             
-            <QuickActionIcon title="Airtime Top\nup" iconName="phone" iconFamily="Feather" />
-            <QuickActionIcon title="Bonga\nLoyalty" iconName="gift-outline" iconFamily="MaterialCommunityIcons" />
+            <QuickActionIcon title="Airtime Top\nup" localImage={require('../../assets/images/icons/assets_images_icons_iconairtime.png')} />
+            <QuickActionIcon title="Global" localImage={require('../../assets/images/icons/assets_images_icons_iconintl.png')} />
             <QuickActionIcon 
               title="Pochi\nWallet" 
               customIcon={
