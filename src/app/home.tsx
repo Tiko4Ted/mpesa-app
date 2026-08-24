@@ -74,13 +74,13 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.grid}>
-            <QuickActionIcon title="Send\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconsend.png')} />
-            <QuickActionIcon title="Lipa na M-\nPESA" localImage={require('../../assets/images/icons/assets_images_icons_iconlipa.png')} />
-            <QuickActionIcon title="Withdraw\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconwithdraw.png')} />
-            <QuickActionIcon title="Buy\nBundles" localImage={require('../../assets/images/icons/assets_images_icons_iconbundles.png')} />
+            <QuickActionIcon title="Send\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconsenddark.png')} />
+            <QuickActionIcon title="Lipa na M-\nPESA" localImage={require('../../assets/images/icons/assets_images_icons_iconlipadark.png')} />
+            <QuickActionIcon title="Withdraw\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png')} />
+            <QuickActionIcon title="Buy\nBundles" localImage={require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png')} />
             
-            <QuickActionIcon title="Airtime Top\nup" localImage={require('../../assets/images/icons/assets_images_icons_iconairtime.png')} />
-            <QuickActionIcon title="Global" localImage={require('../../assets/images/icons/assets_images_icons_iconintl.png')} />
+            <QuickActionIcon title="Airtime Top\nup" localImage={require('../../assets/images/icons/assets_images_icons_iconairtimedark.png')} />
+            <QuickActionIcon title="Global" localImage={require('../../assets/images/icons/assets_images_icons_iconintldark.png')} />
             <QuickActionIcon 
               title="Pochi\nWallet" 
               customIcon={

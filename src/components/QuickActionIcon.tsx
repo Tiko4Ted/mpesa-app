@@ -24,9 +24,9 @@ export default function QuickActionIcon({
 
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7}>
-      <View style={styles.iconContainer}>
+      <View style={[styles.iconContainer, localImage && { backgroundColor: 'transparent' }]}>
         {localImage ? (
-          <Image source={localImage} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
+          <Image source={localImage} style={{ width: 60, height: 60, resizeMode: 'contain' }} />
         ) : customIcon ? (
           customIcon
         ) : (
