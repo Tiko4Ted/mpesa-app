@@ -43,12 +43,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeBox: {
-    borderColor: '#34C759',
+    borderColor: '#00CC66',
   },
   cursor: {
     width: 2,
     height: 30,
-    backgroundColor: '#34C759',
+    backgroundColor: '#00CC66',
   },
   filledCircle: {
     width: 12,

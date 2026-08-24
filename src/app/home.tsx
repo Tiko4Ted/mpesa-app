@@ -18,7 +18,7 @@ export default function HomeScreen() {
                 style={styles.avatar} 
               />
               <View style={styles.badge}>
-                <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+                <Ionicons name="checkmark" size={10} color="#00CC66" />
               </View>
             </View>
             <View>
@@ -29,13 +29,13 @@ export default function HomeScreen() {
           
           <View style={styles.headerActions}>
             <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="notifications-outline" size={24} color="#34C759" />
+              <Ionicons name="notifications-outline" size={24} color="#00CC66" />
               <View style={styles.notificationDot}>
                 <Text style={styles.notificationText}>1</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="search-outline" size={24} color="#34C759" />
+              <Ionicons name="search-outline" size={24} color="#00CC66" />
             </TouchableOpacity>
           </View>
         </View>
@@ -50,13 +50,13 @@ export default function HomeScreen() {
             title="M-PESA Balance"
             balance="Ksh 0.00"
             fuliza="Ksh 420.30"
-            gradientColors={['#34C759', '#007AFF']}
+            gradientColors={['#00CC66', '#00C6FF']}
           />
           <BalanceCard 
             title="My Airtime"
             balance="Ksh 0.00"
             fuliza="Ksh 0.00"
-            gradientColors={['#007AFF', '#34C759']}
+            gradientColors={['#00C6FF', '#00CC66']}
           />
         </ScrollView>
         <View style={styles.pagination}>
@@ -74,15 +74,31 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.grid}>
-            <QuickActionIcon title="Send\nMoney" iconName="send-outline" />
-            <QuickActionIcon title="Lipa na M-\nPESA" iconName="basket-outline" />
-            <QuickActionIcon title="Withdraw\nMoney" iconName="cash-outline" />
-            <QuickActionIcon title="Buy\nBundles" iconName="swap-vertical-outline" />
+            <QuickActionIcon title="Send\nMoney" iconName="send" iconFamily="Feather" />
+            <QuickActionIcon title="Lipa na M-\nPESA" iconName="basket-outline" iconFamily="MaterialCommunityIcons" />
+            <QuickActionIcon 
+              title="Withdraw\nMoney" 
+              customIcon={
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Ionicons name="wallet-outline" size={24} color="#00CC66" />
+                  <Ionicons name="arrow-down" size={14} color="#FF3B30" style={{ marginLeft: -6, marginTop: 10 }} />
+                </View>
+              } 
+            />
+            <QuickActionIcon title="Buy\nBundles" iconName="swap-vertical" iconFamily="Ionicons" />
             
-            <QuickActionIcon title="Airtime Top\nup" iconName="call-outline" />
-            <QuickActionIcon title="Bonga\nLoyalty" iconName="gift-outline" />
-            <QuickActionIcon title="Pochi\nWallet" iconName="wallet-outline" />
-            <QuickActionIcon title="Add\nAction" iconName="add-outline" color="#FF3B30" />
+            <QuickActionIcon title="Airtime Top\nup" iconName="phone" iconFamily="Feather" />
+            <QuickActionIcon title="Bonga\nLoyalty" iconName="gift-outline" iconFamily="MaterialCommunityIcons" />
+            <QuickActionIcon 
+              title="Pochi\nWallet" 
+              customIcon={
+                <View>
+                  <Ionicons name="wallet-outline" size={24} color="#00CC66" />
+                  <View style={{position: 'absolute', right: -2, top: 2, width: 8, height: 8, borderRadius: 4, backgroundColor: '#FF3B30'}} />
+                </View>
+              } 
+            />
+            <QuickActionIcon title="Add\nAction" iconName="plus" iconFamily="Feather" color="#FF3B30" />
           </View>
         </View>
 
@@ -105,10 +121,10 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.frequentsRow}>
-            <QuickActionIcon title="Hustler\nFund" iconName="briefcase-outline" />
-            <QuickActionIcon title="M-Shwari" iconName="bar-chart-outline" />
-            <QuickActionIcon title="Nyota" iconName="star-outline" />
-            <QuickActionIcon title="M-Pesa" iconName="phone-portrait-outline" />
+            <QuickActionIcon title="Hustler\nFund" iconName="grid" iconFamily="Feather" />
+            <QuickActionIcon title="M-Shwari" iconName="piggy-bank-outline" iconFamily="MaterialCommunityIcons" />
+            <QuickActionIcon title="Nyota" iconName="star" iconFamily="Feather" />
+            <QuickActionIcon title="M-Pesa" iconName="smartphone" iconFamily="Feather" />
           </View>
         </View>
 
@@ -165,18 +181,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#34C759',
+    backgroundColor: '#FFFFFF',
     width: 16,
     height: 16,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: '#111111',
   },
   greeting: {
-    color: '#AAAAAA',
-    fontSize: 14,
+    color: '#888888',
+    fontSize: 13,
   },
   name: {
     color: '#FFFFFF',
@@ -249,8 +265,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   viewAllText: {
-    color: '#34C759',
-    fontSize: 14,
+    color: '#00CC66',
+    fontSize: 13,
+    fontWeight: '500',
   },
   grid: {
     flexDirection: 'row',
@@ -259,18 +276,18 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#2C2C2E',
-    borderRadius: 20,
+    backgroundColor: '#202022',
+    borderRadius: 24,
     padding: 4,
-    marginBottom: 16,
+    marginBottom: 20,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   activeSegment: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#00CC66',
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 16,
+    paddingHorizontal: 20,
+    borderRadius: 20,
   },
   activeSegmentText: {
     color: '#FFFFFF',
@@ -289,7 +306,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   dealBanner: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#00CC66',
     height: 100,
     borderRadius: 16,
     marginTop: 12,
@@ -297,7 +314,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dealBannerText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 24,
     fontWeight: 'bold',
   },
@@ -305,17 +322,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     right: 20,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#252528',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     borderRadius: 30,
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
   },
   fabText: {
     color: '#FFFFFF',

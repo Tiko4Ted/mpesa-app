@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     height: 160,
   },
   title: {
-    color: '#34C759',
+    color: '#00CC66',
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
@@ -96,13 +96,13 @@ const styles = StyleSheet.create({
   },
   button: {
     borderWidth: 1,
-    borderColor: '#34C759',
+    borderColor: '#00CC66',
     borderRadius: 20,
     paddingVertical: 8,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#34C759',
+    color: '#00CC66',
     fontSize: 14,
     fontWeight: '500',
   }

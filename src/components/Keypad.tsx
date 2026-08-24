@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   backspaceBorder: {
     position: 'absolute',
     borderWidth: 1.5,
-    borderColor: '#34C759',
+    borderColor: '#00CC66',
     width: 48,
     height: 36,
     borderRadius: 8,
