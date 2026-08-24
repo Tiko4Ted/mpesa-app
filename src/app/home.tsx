@@ -1,0 +1,325 @@
+import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import BalanceCard from '../components/BalanceCard';
+import QuickActionIcon from '../components/QuickActionIcon';
+
+export default function HomeScreen() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.profileInfo}>
+            <View style={styles.avatarContainer}>
+              <Image 
+                source={{ uri: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80' }} 
+                style={styles.avatar} 
+              />
+              <View style={styles.badge}>
+                <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+              </View>
+            </View>
+            <View>
+              <Text style={styles.greeting}>Good afternoon,</Text>
+              <Text style={styles.name}>Teddy 👋</Text>
+            </View>
+          </View>
+          
+          <View style={styles.headerActions}>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="notifications-outline" size={24} color="#34C759" />
+              <View style={styles.notificationDot}>
+                <Text style={styles.notificationText}>1</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="search-outline" size={24} color="#34C759" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Balances */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.balancesContainer}
+        >
+          <BalanceCard 
+            title="M-PESA Balance"
+            balance="Ksh 0.00"
+            fuliza="Ksh 420.30"
+            gradientColors={['#34C759', '#007AFF']}
+          />
+          <BalanceCard 
+            title="My Airtime"
+            balance="Ksh 0.00"
+            fuliza="Ksh 0.00"
+            gradientColors={['#007AFF', '#34C759']}
+          />
+        </ScrollView>
+        <View style={styles.pagination}>
+          <View style={[styles.dot, styles.activeDot]} />
+          <View style={styles.dot} />
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>View all {'>'}</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.grid}>
+            <QuickActionIcon title="Send\nMoney" iconName="send-outline" />
+            <QuickActionIcon title="Lipa na M-\nPESA" iconName="basket-outline" />
+            <QuickActionIcon title="Withdraw\nMoney" iconName="cash-outline" />
+            <QuickActionIcon title="Buy\nBundles" iconName="swap-vertical-outline" />
+            
+            <QuickActionIcon title="Airtime Top\nup" iconName="call-outline" />
+            <QuickActionIcon title="Bonga\nLoyalty" iconName="gift-outline" />
+            <QuickActionIcon title="Pochi\nWallet" iconName="wallet-outline" />
+            <QuickActionIcon title="Add\nAction" iconName="add-outline" color="#FF3B30" />
+          </View>
+        </View>
+
+        {/* Frequents */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Frequents</Text>
+            <TouchableOpacity>
+              <Ionicons name="chevron-up-outline" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.segmentedControl}>
+            <View style={styles.activeSegment}>
+              <Text style={styles.activeSegmentText}>Apps</Text>
+            </View>
+            <Text style={styles.segmentText}>Send</Text>
+            <Text style={styles.segmentText}>Pay</Text>
+            <Text style={styles.segmentText}>Bundles</Text>
+          </View>
+
+          <View style={styles.frequentsRow}>
+            <QuickActionIcon title="Hustler\nFund" iconName="briefcase-outline" />
+            <QuickActionIcon title="M-Shwari" iconName="bar-chart-outline" />
+            <QuickActionIcon title="Nyota" iconName="star-outline" />
+            <QuickActionIcon title="M-Pesa" iconName="phone-portrait-outline" />
+          </View>
+        </View>
+
+        {/* Deals */}
+        <View style={styles.dealsSection}>
+          <Text style={styles.sectionTitle}>Explore & Discover Deals 🔥</Text>
+          <View style={styles.dealBanner}>
+            <Text style={styles.dealBannerText}>BATA</Text>
+          </View>
+        </View>
+        
+        {/* Spacer for floating button */}
+        <View style={{ height: 100 }} />
+      </ScrollView>
+
+      {/* Floating Action Button */}
+      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+        <Ionicons name="qr-code-outline" size={24} color="#34C759" />
+        <Text style={styles.fabText}>Scan to pay</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#111111',
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  profileInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    marginRight: 12,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  badge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#34C759',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#111111',
+  },
+  greeting: {
+    color: '#AAAAAA',
+    fontSize: 14,
+  },
+  name: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#1C1C1E',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#FF3B30',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  balancesContainer: {
+    paddingHorizontal: 20,
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  dot: {
+    width: 16,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#333333',
+  },
+  activeDot: {
+    backgroundColor: '#34C759',
+  },
+  sectionContainer: {
+    backgroundColor: '#1C1C1E',
+    marginHorizontal: 20,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  viewAllText: {
+    color: '#34C759',
+    fontSize: 14,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -8,
+  },
+  segmentedControl: {
+    flexDirection: 'row',
+    backgroundColor: '#2C2C2E',
+    borderRadius: 20,
+    padding: 4,
+    marginBottom: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  activeSegment: {
+    backgroundColor: '#34C759',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  activeSegmentText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  segmentText: {
+    color: '#AAAAAA',
+    paddingHorizontal: 16,
+  },
+  frequentsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: -8,
+  },
+  dealsSection: {
+    paddingHorizontal: 20,
+  },
+  dealBanner: {
+    backgroundColor: '#34C759',
+    height: 100,
+    borderRadius: 16,
+    marginTop: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dealBannerText: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#1C1C1E',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 30,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  fabText: {
+    color: '#FFFFFF',
+    marginLeft: 8,
+    fontWeight: '600',
+  }
+});
