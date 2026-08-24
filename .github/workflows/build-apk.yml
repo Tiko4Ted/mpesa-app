@@ -13,36 +13,88 @@ jobs:
 
     steps:
       - name: Checkout Code
+        id: checkout
         uses: actions/checkout@v6
+        continue-on-error: true
 
       - name: Setup Node.js
+        id: setup-node
         uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'npm'
+        continue-on-error: true
 
       - name: Setup Java
+        id: setup-java
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '21'
+        continue-on-error: true
 
       - name: Setup Android SDK
+        id: setup-android
         uses: android-actions/setup-android@v4
         with:
           packages: tools platform-tools platforms;android-36 build-tools;36.0.0
+        continue-on-error: true
+
+      - name: Validate Setup
+        run: |
+          fail=0
+          if [ "${{ steps.checkout.outcome }}" != "success" ]; then
+            echo "::error title=Checkout failed::actions/checkout did not complete successfully"
+            fail=1
+          fi
+          if [ "${{ steps.setup-node.outcome }}" != "success" ]; then
+            echo "::error title=Node setup failed::actions/setup-node did not complete successfully"
+            fail=1
+          fi
+          if [ "${{ steps.setup-java.outcome }}" != "success" ]; then
+            echo "::error title=Java setup failed::actions/setup-java did not complete successfully"
+            fail=1
+          fi
+          if [ "${{ steps.setup-android.outcome }}" != "success" ]; then
+            echo "::error title=Android SDK setup failed::android-actions/setup-android did not complete successfully"
+            fail=1
+          fi
+          exit "$fail"
 
       - name: Install Dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: |
+          set -o pipefail
+          npm ci --ignore-scripts --no-audit --no-fund 2>&1 | tee npm-ci.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            tail_output=$(tail -n 40 npm-ci.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            echo "::error title=npm ci failed::$tail_output"
+            exit "$status"
+          fi
 
       - name: Run Expo Prebuild
-        run: npx expo prebuild --platform android --clean --no-install
+        run: |
+          set -o pipefail
+          npx expo prebuild --platform android --clean --no-install 2>&1 | tee expo-prebuild.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            tail_output=$(tail -n 40 expo-prebuild.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            echo "::error title=Expo prebuild failed::$tail_output"
+            exit "$status"
+          fi
 
       - name: Build Android APK
         working-directory: android
         run: |
+          set -o pipefail
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon 2>&1 | tee gradle-build.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            tail_output=$(tail -n 40 gradle-build.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            echo "::error title=Gradle build failed::$tail_output"
+            exit "$status"
+          fi
 
       - name: Rename APK
         run: mv android/app/build/outputs/apk/debug/app-debug.apk "My OneApp.apk"
