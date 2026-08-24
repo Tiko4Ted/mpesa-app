@@ -113,10 +113,10 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.frequentsRow}>
-            <QuickActionIcon title="Hustler\nFund" iconName="grid" iconFamily="Feather" />
-            <QuickActionIcon title="M-Shwari" iconName="piggy-bank-outline" iconFamily="MaterialCommunityIcons" />
-            <QuickActionIcon title="Nyota" iconName="star" iconFamily="Feather" />
-            <QuickActionIcon title="M-Pesa" iconName="smartphone" iconFamily="Feather" />
+            <QuickActionIcon title="Tunukiwa" localImage={require('../../assets/images/icons/assets_images_icons_icontunukiwadark.png')} />
+            <QuickActionIcon title="Zuri" localImage={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} />
+            <QuickActionIcon title="Explore" localImage={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} />
+            <QuickActionIcon title="Do More" localImage={require('../../assets/images/icons/assets_images_icons_domoredark.png')} />
           </View>
         </View>
 
