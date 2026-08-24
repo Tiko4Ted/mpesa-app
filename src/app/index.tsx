@@ -11,11 +11,13 @@ export default function LoginScreen() {
   useEffect(() => {
     if (pin.length === 4) {
       // Simulate network request or validation
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         router.replace('/home');
       }, 300);
+
+      return () => clearTimeout(timeout);
     }
-  }, [pin]);
+  }, [pin, router]);
 
   const handleKeyPress = (digit: string) => {
     if (pin.length < 4) {
