@@ -133,29 +133,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* My Spend */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>My Spend</Text>
-            <TouchableOpacity>
-              <Text style={styles.viewAllText}>Check your spend {'>'}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.spendCard}>
-            <Text style={styles.spendAmount}>Ksh 4,500.00</Text>
-            <Text style={styles.spendSubtitle}>Total spend this week</Text>
-            <View style={styles.chartMock}>
-              <View style={[styles.bar, { height: 30 }]} />
-              <View style={[styles.bar, { height: 50 }]} />
-              <View style={[styles.bar, { height: 20 }]} />
-              <View style={[styles.bar, { height: 80, backgroundColor: '#00CC66' }]} />
-              <View style={[styles.bar, { height: 40 }]} />
-              <View style={[styles.bar, { height: 10 }]} />
-              <View style={[styles.bar, { height: 60 }]} />
-            </View>
-          </View>
-        </View>
-
         {/* Frequents */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
@@ -396,32 +373,7 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     flexWrap: 'wrap',
     marginHorizontal: -8,
   },
-  spendCard: {
-    marginTop: 8,
-  },
-  spendAmount: {
-    color: isDark ? '#FFFFFF' : '#000000',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  spendSubtitle: {
-    color: isDark ? '#888888' : '#555555',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  chartMock: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    height: 80,
-    marginTop: 20,
-    paddingHorizontal: 10,
-  },
-  bar: {
-    width: 24,
-    backgroundColor: isDark ? '#333333' : '#E5E5EA',
-    borderRadius: 4,
-  },
+
   segmentedControl: {
     flexDirection: 'row',
     backgroundColor: isDark ? '#202022' : '#F2F2F7',
