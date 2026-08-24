@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView, useColorScheme, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, useColorScheme, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PinInput from '../components/PinInput';
 import Keypad from '../components/Keypad';
 import { getUserSession, saveUserSession, UserSession } from '../lib/storage';
+
+const DEFAULT_API_BASE_URL = 'https://mpesa-admin-portal.vercel.app';
+const API_BASE_URL = (process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
+
+type LoginResponse = {
+  success?: boolean;
+  error?: string;
+  account?: UserSession;
+};
 
 export default function LoginScreen() {
   const [pin, setPin] = useState('');
@@ -63,20 +72,34 @@ export default function LoginScreen() {
       setError('Please fill in all fields');
       return;
     }
+
+    if (!/^\d{4}$/.test(setupPin)) {
+      setError('PIN must be exactly 4 digits');
+      return;
+    }
     
     setIsSettingUp(true);
     setError('');
     
     try {
       // Connect to our Next.js backend API
-      const res = await fetch('https://mpesa-admin-portal.vercel.app/api/login', {
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phoneNumber, pin: setupPin })
+        body: JSON.stringify({ name: name.trim(), phoneNumber: phoneNumber.trim(), pin: setupPin })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({})) as LoginResponse;
       
       if (!res.ok) throw new Error(data.error || 'Failed to authenticate');
+      if (
+        !data.account ||
+        typeof data.account.name !== 'string' ||
+        typeof data.account.phoneNumber !== 'string' ||
+        typeof data.account.pin !== 'string' ||
+        typeof data.account.balance !== 'number'
+      ) {
+        throw new Error('Invalid account response');
+      }
       
       const newSession = {
         name: data.account.name,
@@ -87,8 +110,8 @@ export default function LoginScreen() {
       
       await saveUserSession(newSession);
       setSession(newSession);
-    } catch (err: any) {
-      setError(err.message || 'Network error');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Network error');
     } finally {
       setIsSettingUp(false);
     }

@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, RefreshControl, Dimensions, useColorScheme } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, RefreshControl, useColorScheme, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import BalanceCard from '../components/BalanceCard';
 import QuickActionIcon from '../components/QuickActionIcon';
 import { getUserSession, UserSession } from '../lib/storage';
 
 export default function HomeScreen() {
-  const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark' || colorScheme == null; // default to dark if null
   const styles = getStyles(isDark);
@@ -40,7 +39,7 @@ export default function HomeScreen() {
     }, 1500);
   }, []);
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
     const index = event.nativeEvent.contentOffset.x / slideSize;
     setActiveIndex(Math.round(index));

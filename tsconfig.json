@@ -16,5 +16,11 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "admin",
+    "decoded_apk",
+    "extracted_apk",
+    "node_modules"
   ]
 }
