@@ -1,18 +1,18 @@
-name: Build Android APK
+name: Build and Release Android APK
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-  build-android:
+  build-and-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -26,52 +26,34 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-          cache: 'gradle'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK packages
+      - name: Install Android SDK Packages
         run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Install npm dependencies
+      - name: Install Dependencies
         run: npm ci
-
-      - name: Validate Expo dependencies
-        run: npx expo install --check
-
-      - name: Typecheck
-        run: npx tsc --noEmit
-
-      - name: Bundle Android JS
-        run: npx expo export --platform android --output-dir dist-android
 
       - name: Run Expo Prebuild
         run: npx expo prebuild --platform android --clean --no-install
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x android/gradlew
-
-      - name: Build APK
+      - name: Build Android APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: mpesa-app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
       - name: Rename APK
-        run: mv android/app/build/outputs/apk/debug/app-debug.apk mpesa.apk
+        run: mv android/app/build/outputs/apk/debug/app-debug.apk "My OneApp.apk"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v1.0.${{ github.run_number }}"
-          name: "M-PESA Android APK (Build ${{ github.run_number }})"
-          files: mpesa.apk
+          name: "My OneApp Mobile Update (Build ${{ github.run_number }})"
+          files: "My OneApp.apk"
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

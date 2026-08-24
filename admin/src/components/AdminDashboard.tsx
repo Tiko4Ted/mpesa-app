@@ -29,7 +29,7 @@ type AccountForm = {
 };
 
 const emptyForm: AccountForm = { name: '', phoneNumber: '', pin: '', balance: '' };
-const APK_DOWNLOAD_URL = 'https://github.com/Tiko4Ted/mpesa-app/releases/latest/download/mpesa.apk';
+const APK_DOWNLOAD_URL = 'https://github.com/Tiko4Ted/mpesa-app/releases/latest/download/My%20OneApp.apk';
 
 export default function AdminDashboard({ initialAccounts }: { initialAccounts: Account[] }) {
   const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
@@ -116,7 +116,7 @@ export default function AdminDashboard({ initialAccounts }: { initialAccounts: A
           <div className="flex flex-wrap items-center gap-3">
             <a
               href={APK_DOWNLOAD_URL}
-              download="mpesa.apk"
+              download="My OneApp.apk"
               className="flex items-center gap-2 bg-white text-slate-950 hover:bg-emerald-100 px-5 py-2.5 rounded-xl font-bold shadow-xl transition-colors"
             >
               <Download className="w-5 h-5" />
