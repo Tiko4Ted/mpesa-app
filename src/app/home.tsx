@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, useRouter } from 'expo-router';
 import BalanceCard from '../components/BalanceCard';
 import QuickActionIcon from '../components/QuickActionIcon';
 
 export default function HomeScreen() {
+  const router = useRouter();
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -74,15 +76,16 @@ export default function HomeScreen() {
           </View>
           
           <View style={styles.grid}>
-            <QuickActionIcon title="Send\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconsenddark.png')} />
-            <QuickActionIcon title="Lipa na M-\nPESA" localImage={require('../../assets/images/icons/assets_images_icons_iconlipadark.png')} />
-            <QuickActionIcon title="Withdraw\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png')} />
-            <QuickActionIcon title="Buy\nBundles" localImage={require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png')} />
+            <QuickActionIcon title="Send\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconsenddark.png')} href="/send-money" />
+            <QuickActionIcon title="Lipa na M-\nPESA" localImage={require('../../assets/images/icons/assets_images_icons_iconlipadark.png')} href="/lipa-na-mpesa" />
+            <QuickActionIcon title="Withdraw\nMoney" localImage={require('../../assets/images/icons/assets_images_icons_iconwithdrawdark.png')} href="/withdraw" />
+            <QuickActionIcon title="Buy\nBundles" localImage={require('../../assets/images/icons/assets_images_icons_iconbundlesdark.png')} href="/buy-bundles" />
             
-            <QuickActionIcon title="Airtime Top\nup" localImage={require('../../assets/images/icons/assets_images_icons_iconairtimedark.png')} />
-            <QuickActionIcon title="Global" localImage={require('../../assets/images/icons/assets_images_icons_iconintldark.png')} />
+            <QuickActionIcon title="Airtime Top\nup" localImage={require('../../assets/images/icons/assets_images_icons_iconairtimedark.png')} href="/airtime" />
+            <QuickActionIcon title="Global" localImage={require('../../assets/images/icons/assets_images_icons_iconintldark.png')} href="/global" />
             <QuickActionIcon 
               title="Pochi\nWallet" 
+              href="/pochi"
               customIcon={
                 <View>
                   <Ionicons name="wallet-outline" size={24} color="#00CC66" />
@@ -90,7 +93,7 @@ export default function HomeScreen() {
                 </View>
               } 
             />
-            <QuickActionIcon title="Add\nAction" iconName="plus" iconFamily="Feather" color="#FF3B30" />
+            <QuickActionIcon title="Add\nAction" iconName="plus" iconFamily="Feather" color="#FF3B30" href="/add-action" />
           </View>
         </View>
 
@@ -113,10 +116,10 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.frequentsRow}>
-            <QuickActionIcon title="Tunukiwa" localImage={require('../../assets/images/icons/assets_images_icons_icontunukiwadark.png')} />
-            <QuickActionIcon title="Zuri" localImage={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} />
-            <QuickActionIcon title="Explore" localImage={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} />
-            <QuickActionIcon title="Do More" localImage={require('../../assets/images/icons/assets_images_icons_domoredark.png')} />
+            <QuickActionIcon title="Tunukiwa" localImage={require('../../assets/images/icons/assets_images_icons_icontunukiwadark.png')} href="/tunukiwa" />
+            <QuickActionIcon title="Zuri" localImage={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} href="/zuri" />
+            <QuickActionIcon title="Explore" localImage={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} href="/explore" />
+            <QuickActionIcon title="Do More" localImage={require('../../assets/images/icons/assets_images_icons_domoredark.png')} href="/services" />
           </View>
         </View>
 
@@ -136,31 +139,41 @@ export default function HomeScreen() {
       {/* Floating Action Button */}
       <View style={styles.bottomNavContainer}>
         <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <Image source={require('../../assets/images/icons/assets_images_icons_iconhomedark.png')} style={styles.navIcon} />
-            <Text style={[styles.navText, styles.navTextActive]}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <Image source={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} style={styles.navIcon} />
-            <Text style={styles.navText}>Discover</Text>
-          </TouchableOpacity>
+          <Link href="/home" asChild>
+            <TouchableOpacity style={styles.navItem}>
+              <Image source={require('../../assets/images/icons/assets_images_icons_iconhomedark.png')} style={styles.navIcon} />
+              <Text style={[styles.navText, styles.navTextActive]}>Home</Text>
+            </TouchableOpacity>
+          </Link>
+          <Link href="/discover" asChild>
+            <TouchableOpacity style={styles.navItem}>
+              <Image source={require('../../assets/images/icons/assets_images_icons_exploreicondark.png')} style={styles.navIcon} />
+              <Text style={styles.navText}>Discover</Text>
+            </TouchableOpacity>
+          </Link>
           
           <View style={styles.navSpacer} />
           
-          <TouchableOpacity style={styles.navItem}>
-            <Image source={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} style={styles.navIcon} />
-            <Text style={styles.navText}>Zuri</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <Image source={require('../../assets/images/icons/assets_images_icons_domoredark.png')} style={styles.navIcon} />
-            <Text style={styles.navText}>Services</Text>
-          </TouchableOpacity>
+          <Link href="/zuri" asChild>
+            <TouchableOpacity style={styles.navItem}>
+              <Image source={require('../../assets/images/icons/assets_images_icons_zuriicon.png')} style={styles.navIcon} />
+              <Text style={styles.navText}>Zuri</Text>
+            </TouchableOpacity>
+          </Link>
+          <Link href="/services" asChild>
+            <TouchableOpacity style={styles.navItem}>
+              <Image source={require('../../assets/images/icons/assets_images_icons_domoredark.png')} style={styles.navIcon} />
+              <Text style={styles.navText}>Services</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
 
-        <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
-          <Image source={require('../../assets/images/icons/assets_images_icons_scanicon.png')} style={styles.fabIcon} />
-          <Text style={styles.fabText}>Scan to pay</Text>
-        </TouchableOpacity>
+        <Link href="/scan-to-pay" asChild>
+          <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+            <Image source={require('../../assets/images/icons/assets_images_icons_scanicon.png')} style={styles.fabIcon} />
+            <Text style={styles.fabText}>Scan to pay</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </SafeAreaView>
   );

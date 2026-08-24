@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 
+import { useRouter } from 'expo-router';
+
 interface QuickActionIconProps {
   title: string;
   iconName?: any;
@@ -9,6 +11,7 @@ interface QuickActionIconProps {
   color?: string;
   customIcon?: React.ReactNode;
   localImage?: any;
+  href?: string;
 }
 
 export default function QuickActionIcon({ 
@@ -17,13 +20,21 @@ export default function QuickActionIcon({
   iconFamily = 'Ionicons',
   color = '#00CC66',
   customIcon,
-  localImage
+  localImage,
+  href
 }: QuickActionIconProps) {
+  const router = useRouter();
   
   const IconComponent = iconFamily === 'MaterialCommunityIcons' ? MaterialCommunityIcons : iconFamily === 'Feather' ? Feather : Ionicons;
 
+  const handlePress = () => {
+    if (href) {
+      router.push(href as any);
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handlePress}>
       <View style={[styles.iconContainer, localImage && { backgroundColor: 'transparent' }]}>
         {localImage ? (
           <Image source={localImage} style={{ width: 60, height: 60, resizeMode: 'contain' }} />
