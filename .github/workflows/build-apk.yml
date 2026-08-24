@@ -18,7 +18,7 @@ jobs:
         continue-on-error: true
 
       - name: Setup Node.js
-        id: setup-node
+        id: setup_node
         uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -26,7 +26,7 @@ jobs:
         continue-on-error: true
 
       - name: Setup Java
-        id: setup-java
+        id: setup_java
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
@@ -34,34 +34,38 @@ jobs:
         continue-on-error: true
 
       - name: Setup Android SDK
-        id: setup-android
+        id: setup_android
         uses: android-actions/setup-android@v4
         with:
           packages: tools platform-tools platforms;android-36 build-tools;36.0.0
         continue-on-error: true
 
       - name: Validate Setup
+        id: validate_setup
+        continue-on-error: true
         run: |
           fail=0
           if [ "${{ steps.checkout.outcome }}" != "success" ]; then
             echo "::error title=Checkout failed::actions/checkout did not complete successfully"
             fail=1
           fi
-          if [ "${{ steps.setup-node.outcome }}" != "success" ]; then
+          if [ "${{ steps.setup_node.outcome }}" != "success" ]; then
             echo "::error title=Node setup failed::actions/setup-node did not complete successfully"
             fail=1
           fi
-          if [ "${{ steps.setup-java.outcome }}" != "success" ]; then
+          if [ "${{ steps.setup_java.outcome }}" != "success" ]; then
             echo "::error title=Java setup failed::actions/setup-java did not complete successfully"
             fail=1
           fi
-          if [ "${{ steps.setup-android.outcome }}" != "success" ]; then
+          if [ "${{ steps.setup_android.outcome }}" != "success" ]; then
             echo "::error title=Android SDK setup failed::android-actions/setup-android did not complete successfully"
             fail=1
           fi
           exit "$fail"
 
       - name: Install Dependencies
+        id: install_deps
+        continue-on-error: true
         run: |
           set -o pipefail
           npm ci --ignore-scripts --no-audit --no-fund 2>&1 | tee npm-ci.log
@@ -73,6 +77,9 @@ jobs:
           fi
 
       - name: Run Expo Prebuild
+        id: expo_prebuild
+        if: steps.install_deps.outcome == 'success'
+        continue-on-error: true
         run: |
           set -o pipefail
           npx expo prebuild --platform android --clean --no-install 2>&1 | tee expo-prebuild.log
@@ -84,6 +91,9 @@ jobs:
           fi
 
       - name: Build Android APK
+        id: build_apk
+        if: steps.expo_prebuild.outcome == 'success'
+        continue-on-error: true
         working-directory: android
         run: |
           set -o pipefail
@@ -97,9 +107,11 @@ jobs:
           fi
 
       - name: Rename APK
+        if: steps.build_apk.outcome == 'success'
         run: mv android/app/build/outputs/apk/debug/app-debug.apk "My OneApp.apk"
 
       - name: Create GitHub Release
+        if: steps.build_apk.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v1.0.${{ github.run_number }}"
@@ -108,3 +120,40 @@ jobs:
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Debug Report
+        if: always() && (steps.checkout.outcome != 'success' || steps.setup_node.outcome != 'success' || steps.setup_java.outcome != 'success' || steps.setup_android.outcome != 'success' || steps.install_deps.outcome != 'success' || steps.expo_prebuild.outcome == 'failure' || steps.build_apk.outcome == 'failure')
+        run: |
+          report="$RUNNER_TEMP/apk-build-debug.txt"
+          {
+            echo "run_id=$GITHUB_RUN_ID"
+            echo "run_number=$GITHUB_RUN_NUMBER"
+            echo "sha=$GITHUB_SHA"
+            echo "checkout=${{ steps.checkout.outcome }}"
+            echo "setup_node=${{ steps.setup_node.outcome }}"
+            echo "setup_java=${{ steps.setup_java.outcome }}"
+            echo "setup_android=${{ steps.setup_android.outcome }}"
+            echo "install_deps=${{ steps.install_deps.outcome }}"
+            echo "expo_prebuild=${{ steps.expo_prebuild.outcome }}"
+            echo "build_apk=${{ steps.build_apk.outcome }}"
+            echo
+            for file in npm-ci.log expo-prebuild.log android/gradle-build.log; do
+              echo "===== $file ====="
+              if [ -f "$file" ]; then
+                tail -n 120 "$file"
+              else
+                echo "not found"
+              fi
+              echo
+            done
+          } > "$report"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --orphan ci-debug-work
+          git rm -rf . >/dev/null 2>&1 || true
+          cp "$report" apk-build-debug.txt
+          git add apk-build-debug.txt
+          git commit -m "Update APK workflow debug report"
+          git push origin HEAD:ci-debug --force
+          exit 1
