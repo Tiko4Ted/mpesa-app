@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, useColorScheme } from 'react-native';
 
 interface KeypadProps {
   onPress: (digit: string) => void;
@@ -10,6 +9,10 @@ interface KeypadProps {
 const { width } = Dimensions.get('window');
 
 export default function Keypad({ onPress, onBackspace }: KeypadProps) {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark' || colorScheme == null;
+  const styles = getStyles(isDark);
+
   const renderKey = (item: string | null) => {
     if (item === null) {
       return <View key="empty" style={styles.keyContainer} />;
@@ -23,8 +26,10 @@ export default function Keypad({ onPress, onBackspace }: KeypadProps) {
           activeOpacity={0.7}
         >
           <View style={styles.backspaceIcon}>
-            <Ionicons name="backspace-outline" size={28} color="#FF3B30" />
-            <View style={styles.backspaceBorder} />
+            <Image 
+              source={isDark ? require('../../assets/images/icons/assets_images_icons_deleteicondark.png') : require('../../assets/images/icons/assets_images_icons_deleteicon.png')} 
+              style={{ width: 44, height: 44, resizeMode: 'contain' }} 
+            />
           </View>
         </TouchableOpacity>
       );
@@ -56,7 +61,7 @@ export default function Keypad({ onPress, onBackspace }: KeypadProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark: boolean) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -73,7 +78,7 @@ const styles = StyleSheet.create({
   },
   keyText: {
     fontSize: 32,
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontWeight: '400',
   },
   backspaceIcon: {
@@ -81,14 +86,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 60,
     height: 60,
-  },
-  backspaceBorder: {
-    position: 'absolute',
-    borderWidth: 1.5,
-    borderColor: '#00CC66',
-    width: 48,
-    height: 36,
-    borderRadius: 8,
-    zIndex: -1,
   }
 });
