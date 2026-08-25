@@ -1,0 +1,7 @@
+api/tests/**
+api/prisma.config.ts
+android/**
+assets/icon-background.png
+assets/icon-foreground.png
+assets/icon-only.png
+assets/splash.png
