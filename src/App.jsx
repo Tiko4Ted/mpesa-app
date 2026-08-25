@@ -62,6 +62,13 @@ const normalizeAccount = (account) => ({
 
 const normalizePhoneInput = (value) => value.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '').slice(0, 15);
 const normalizePinInput = (value) => value.replace(/\D/g, '').slice(0, 6);
+const getFirstName = (name) => name.trim().split(/\s+/)[0] || 'there';
+const getGreeting = (date = new Date()) => {
+  const hour = date.getHours();
+  if (hour < 12) return 'Good morning,';
+  if (hour < 18) return 'Good afternoon,';
+  return 'Good evening,';
+};
 const readStorage = (key) => {
   try {
     return localStorage.getItem(key) || '';
@@ -104,14 +111,19 @@ function CustomerPanel({ onAuthChange }) {
   const [credentials, setCredentials] = useState({ phoneNumber: '', name: '', pin: '' });
   const [account, setAccount] = useState(readSavedAccount);
   const [hidden, setHidden] = useState(false);
+  const [now, setNow] = useState(() => new Date());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const quickActions = [
     ['Send Money', sendIcon],
-    ['Withdraw Cash', withdrawIcon],
-    ['Buy Airtime', airtimeIcon],
-    ['Lipa na M-PESA', lipaIcon]
+    ['Lipa na M-PESA', lipaIcon],
+    ['Withdraw Money', withdrawIcon],
+    ['Buy Bundles', bundlesIcon],
+    ['Airtime Top up', tunukiwaIcon],
+    ['Bonga Loyalty', airtimeIcon],
+    ['Pochi Wallet', homeIcon],
+    ['Add Action', null]
   ];
 
   const serviceActions = [
@@ -145,6 +157,11 @@ function CustomerPanel({ onAuthChange }) {
     setAccount(null);
     onAuthChange(false);
   };
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   if (!account) {
     return (
@@ -206,14 +223,15 @@ function CustomerPanel({ onAuthChange }) {
           <span>{account.name.slice(0, 1).toUpperCase()}</span>
         </div>
         <div className="header-copy">
-          <p>Good afternoon</p>
-          <h1>{account.name}</h1>
+          <p>{getGreeting(now)}</p>
+          <h1>{getFirstName(account.name)} <span aria-hidden="true">👋</span></h1>
         </div>
+        <button className="round-tool notify-tool" aria-label="Notifications">
+          <Bell size={18} />
+          <span>1</span>
+        </button>
         <button className="round-tool" aria-label="Search">
           <Search size={18} />
-        </button>
-        <button className="round-tool" aria-label="Notifications">
-          <Bell size={18} />
         </button>
       </div>
 
@@ -229,23 +247,24 @@ function CustomerPanel({ onAuthChange }) {
           <CreditCard size={16} />
           Available Fuliza: {hidden ? 'Ksh ****' : money(account.fuliza).replace('KES', 'Ksh')}
         </div>
+        <button className="statement-button">View statements</button>
       </div>
 
-      <div className="primary-actions">
-        {quickActions.map(([label, icon]) => (
-          <button key={label} className="mpesa-action">
-            <img src={icon} alt="" />
-            <span>{label}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="statement-card">
-        <div>
-          <span>M-PESA Statements</span>
-          <strong>Manage My Line</strong>
+      <div className="quick-actions-card">
+        <div className="quick-actions-head">
+          <h2>Quick Actions</h2>
+          <button>View all <ChevronRight size={16} /></button>
         </div>
-        <ChevronRight size={20} />
+        <div className="primary-actions">
+          {quickActions.map(([label, icon]) => (
+            <button key={label} className="mpesa-action">
+              <span className="action-icon">
+                {icon ? <img src={icon} alt="" /> : <Plus size={26} />}
+              </span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <img className="mpesa-banner" src={financeBanner} alt="Invest, get loans, pay and transfer" />
