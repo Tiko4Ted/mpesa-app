@@ -14,6 +14,18 @@
   align-items: start;
 }
 
+.native-shell {
+  padding: 0;
+  display: block;
+  background: #171817;
+}
+
+.native-shell .app-frame {
+  width: 100%;
+  min-height: 100vh;
+  display: block;
+}
+
 .mode-switch {
   grid-column: 1 / -1;
   width: fit-content;
@@ -353,22 +365,22 @@ input {
   position: relative;
 }
 
-.mpesa-status {
-  height: 30px;
-  padding: 8px 18px 0;
-  display: flex;
-  justify-content: space-between;
-  color: #f7f7f7;
-  font-size: 0.74rem;
-  font-weight: 800;
-}
-
 .mpesa-header {
-  padding: 12px 16px 14px;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 14px;
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 38px 38px;
   align-items: center;
   gap: 9px;
+}
+
+.native-shell .mpesa-home {
+  width: 100%;
+  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .profile-chip,
@@ -637,9 +649,13 @@ input {
   }
 
   .mpesa-home {
-    min-height: calc(100vh - 72px);
-    height: calc(100vh - 72px);
-    max-height: calc(100vh - 72px);
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100%;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
   }
 
   .admin-form {

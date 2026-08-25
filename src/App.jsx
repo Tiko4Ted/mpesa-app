@@ -201,11 +201,6 @@ function CustomerPanel({ onAuthChange }) {
 
   return (
     <section className="phone-surface account-screen mpesa-home">
-      <div className="mpesa-status">
-        <span>9:41</span>
-        <span>4G 100%</span>
-      </div>
-
       <div className="mpesa-header">
         <div className="profile-chip">
           <span>{account.name.slice(0, 1).toUpperCase()}</span>
@@ -505,9 +500,10 @@ export default function App() {
   const [view, setView] = useState('customer');
   const [customerAuthed, setCustomerAuthed] = useState(() => Boolean(readSavedAccount()));
   const showModeSwitch = !(view === 'customer' && customerAuthed);
+  const shellClass = showModeSwitch ? 'app-shell' : 'app-shell native-shell';
 
   return (
-    <main className="app-shell">
+    <main className={shellClass}>
       <div className="app-frame">
         {showModeSwitch ? (
           <div className="mode-switch" role="tablist" aria-label="Mode">
