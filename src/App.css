@@ -63,6 +63,7 @@
 .admin-surface {
   border-radius: 8px;
   padding: 22px;
+  width: 100%;
 }
 
 .brand-row,
@@ -119,9 +120,15 @@ h2 {
 }
 
 .admin-form {
-  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+  grid-template-columns: minmax(140px, 1.1fr) minmax(170px, 1.2fr) minmax(88px, 0.7fr) minmax(116px, 0.8fr) minmax(116px, 0.8fr) auto;
   align-items: end;
   margin: 20px 0;
+}
+
+.phone-field input {
+  font-family: "Segoe UI", ui-monospace, monospace;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 label {
@@ -134,12 +141,14 @@ label {
 
 input {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   border: 1px solid rgba(24, 37, 28, 0.16);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: #ffffff;
   color: #16251b;
+  font-size: 1rem;
+  line-height: 1.25;
 }
 
 .primary-button,
@@ -312,6 +321,7 @@ input {
 
 .account-money {
   text-align: right;
+  min-width: 138px;
 }
 
 .account-money span {
@@ -346,13 +356,57 @@ input {
 
   .admin-form {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .account-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
   }
 
   .account-money {
+    grid-column: 1 / -1;
+    grid-row: 2;
     text-align: left;
+    min-width: 0;
+  }
+
+  .row-actions {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell {
+    padding: 10px;
+  }
+
+  .mode-switch {
+    width: 100%;
+  }
+
+  .mode-switch button {
+    min-width: 0;
+  }
+
+  .phone-surface,
+  .admin-surface {
+    padding: 18px;
+  }
+
+  input {
+    min-height: 54px;
+    padding: 14px 16px;
+  }
+
+  .primary-button {
+    min-height: 54px;
+  }
+
+  .icon-button {
+    width: 44px;
+    height: 44px;
   }
 }

@@ -40,6 +40,9 @@ const normalizeAccount = (account) => ({
   fuliza: Number(account.fuliza || 0)
 });
 
+const normalizePhoneInput = (value) => value.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '').slice(0, 15);
+const normalizePinInput = (value) => value.replace(/\D/g, '').slice(0, 6);
+
 function CustomerPanel() {
   const [credentials, setCredentials] = useState({ phoneNumber: '', name: '', pin: '' });
   const [account, setAccount] = useState(() => {
@@ -94,8 +97,11 @@ function CustomerPanel() {
             Phone number
             <input
               value={credentials.phoneNumber}
-              onChange={(event) => setCredentials({ ...credentials, phoneNumber: event.target.value })}
+              onChange={(event) => setCredentials({ ...credentials, phoneNumber: normalizePhoneInput(event.target.value) })}
+              type="tel"
               inputMode="tel"
+              autoComplete="tel"
+              spellCheck="false"
               placeholder="0712345678"
             />
           </label>
@@ -111,8 +117,9 @@ function CustomerPanel() {
             PIN
             <input
               value={credentials.pin}
-              onChange={(event) => setCredentials({ ...credentials, pin: event.target.value })}
+              onChange={(event) => setCredentials({ ...credentials, pin: normalizePinInput(event.target.value) })}
               inputMode="numeric"
+              autoComplete="one-time-code"
               type="password"
               placeholder="1234"
             />
@@ -327,23 +334,37 @@ function AdminPanel() {
       <form className="admin-form" onSubmit={saveAccount}>
         <label>
           Name
-          <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+          <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} autoComplete="name" placeholder="Jane Wanjiku" />
         </label>
-        <label>
-          Phone
-          <input value={form.phoneNumber} onChange={(event) => setForm({ ...form, phoneNumber: event.target.value })} />
+        <label className="phone-field">
+          Phone number
+          <input
+            value={form.phoneNumber}
+            onChange={(event) => setForm({ ...form, phoneNumber: normalizePhoneInput(event.target.value) })}
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            spellCheck="false"
+            placeholder="0712345678"
+          />
         </label>
         <label>
           PIN
-          <input value={form.pin} onChange={(event) => setForm({ ...form, pin: event.target.value })} />
+          <input
+            value={form.pin}
+            onChange={(event) => setForm({ ...form, pin: normalizePinInput(event.target.value) })}
+            inputMode="numeric"
+            type="password"
+            placeholder="1234"
+          />
         </label>
         <label>
           Balance
-          <input type="number" value={form.balance} onChange={(event) => setForm({ ...form, balance: event.target.value })} />
+          <input type="number" inputMode="decimal" value={form.balance} onChange={(event) => setForm({ ...form, balance: event.target.value })} />
         </label>
         <label>
           Fuliza
-          <input type="number" value={form.fuliza} onChange={(event) => setForm({ ...form, fuliza: event.target.value })} />
+          <input type="number" inputMode="decimal" value={form.fuliza} onChange={(event) => setForm({ ...form, fuliza: event.target.value })} />
         </label>
         <button className="primary-button" disabled={loading}>
           {editingId ? <Pencil size={18} /> : <Plus size={18} />}
