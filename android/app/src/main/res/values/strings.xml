@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">My OneApp</string>
+    <string name="title_activity_main">My OneApp</string>
+    <string name="package_name">com.teddy.mpesa</string>
+    <string name="custom_url_scheme">com.teddy.mpesa</string>
+</resources>
