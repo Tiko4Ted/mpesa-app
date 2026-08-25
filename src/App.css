@@ -1,10 +1,7 @@
 .app-shell {
   min-height: 100vh;
   padding: 24px;
-  background:
-    linear-gradient(145deg, rgba(0, 166, 81, 0.14), transparent 36%),
-    radial-gradient(circle at 92% 12%, rgba(237, 28, 36, 0.16), transparent 26%),
-    #eef4ef;
+  background: #101110;
   display: grid;
   place-items: center;
 }
@@ -47,7 +44,7 @@
   color: white;
 }
 
-.phone-surface,
+.login-screen,
 .admin-surface {
   border: 1px solid rgba(24, 37, 28, 0.12);
   background: rgba(255, 255, 255, 0.92);
@@ -56,8 +53,8 @@
 
 .phone-surface {
   min-height: 640px;
-  border-radius: 28px;
-  padding: 22px;
+  border-radius: 26px;
+  overflow: hidden;
 }
 
 .admin-surface {
@@ -66,7 +63,7 @@
   width: 100%;
 }
 
-.brand-row,
+.login-brand,
 .topbar,
 .admin-header,
 .section-title,
@@ -79,12 +76,12 @@
   align-items: center;
 }
 
-.brand-row {
+.login-brand {
   gap: 14px;
   margin-bottom: 28px;
 }
 
-.brand-row img {
+.login-brand img {
   width: 56px;
   height: 56px;
   border-radius: 14px;
@@ -96,7 +93,7 @@ h2 {
   margin: 0;
 }
 
-.brand-row p,
+.login-brand p,
 .topbar p,
 .section-title p {
   color: #607267;
@@ -117,6 +114,10 @@ h2 {
 .admin-form {
   display: grid;
   gap: 14px;
+}
+
+.login-screen {
+  padding: 22px;
 }
 
 .admin-form {
@@ -335,13 +336,294 @@ input {
 
 @keyframes spin {
   to {
-    transform: rotate(360deg);
+  transform: rotate(360deg);
   }
+}
+
+.mpesa-home {
+  width: 390px;
+  max-width: 100%;
+  max-height: min(860px, calc(100vh - 86px));
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #171817;
+  color: #f6f7f6;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+  position: relative;
+}
+
+.mpesa-status {
+  height: 30px;
+  padding: 8px 18px 0;
+  display: flex;
+  justify-content: space-between;
+  color: #f7f7f7;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.mpesa-header {
+  padding: 12px 16px 14px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 38px 38px;
+  align-items: center;
+  gap: 9px;
+}
+
+.profile-chip,
+.round-tool {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.profile-chip {
+  width: 44px;
+  height: 44px;
+  background: #f2f2f2;
+  color: #027a3b;
+  font-weight: 900;
+}
+
+.header-copy {
+  min-width: 0;
+}
+
+.header-copy p {
+  color: #a8afa8;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.header-copy h1 {
+  color: #ffffff;
+  font-size: 1.02rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.round-tool {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  background: #252725;
+  color: #f4f4f4;
+}
+
+.mpesa-balance-card {
+  margin: 2px 16px 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #0b5b36;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+}
+
+.balance-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #d8eadf;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.balance-eye {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.mpesa-balance-card strong {
+  display: block;
+  margin: 7px 0 12px;
+  color: #ffffff;
+  font-size: 1.62rem;
+  line-height: 1.05;
+  font-weight: 900;
+}
+
+.fuliza-strip {
+  min-height: 34px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.primary-actions {
+  margin: 0 12px 12px;
+  padding: 10px 0;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: #1f211f;
+}
+
+.mpesa-action,
+.service-action,
+.bottom-tabs button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.mpesa-action {
+  min-height: 76px;
+  padding: 4px 6px;
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  color: #f4f4f4;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.mpesa-action img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.statement-card {
+  margin: 0 16px 12px;
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #252725;
+  color: #ffffff;
+}
+
+.statement-card div {
+  display: grid;
+  gap: 2px;
+}
+
+.statement-card span {
+  color: #a9b0a9;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.statement-card strong {
+  font-size: 0.92rem;
+}
+
+.mpesa-banner {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 12px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.service-grid {
+  margin: 0 12px 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.service-action {
+  min-height: 92px;
+  padding: 10px 8px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  background: #232523;
+  color: #f4f4f4;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.service-action img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.small-banner {
+  margin-top: 2px;
+}
+
+.section-heading {
+  margin: 0 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.section-heading h2 {
+  color: #ffffff;
+  font-size: 0.98rem;
+}
+
+.section-heading button {
+  border: 0;
+  background: transparent;
+  color: #38b866;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.discover-tiles {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 76px;
+  border-radius: 8px;
+}
+
+.bottom-tabs {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  padding: 7px 8px 5px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  background: #1b1c1b;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bottom-tabs button {
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  color: #9fa59f;
+  font-size: 0.63rem;
+  font-weight: 800;
+}
+
+.bottom-tabs .active {
+  color: #35b861;
 }
 
 @media (max-width: 900px) {
   .app-shell {
-    padding: 14px;
+    padding: 10px;
     place-items: start center;
   }
 
@@ -352,6 +634,12 @@ input {
   .phone-surface {
     min-height: auto;
     border-radius: 20px;
+  }
+
+  .mpesa-home {
+    min-height: calc(100vh - 72px);
+    height: calc(100vh - 72px);
+    max-height: calc(100vh - 72px);
   }
 
   .admin-form {
@@ -380,7 +668,7 @@ input {
 
 @media (max-width: 480px) {
   .app-shell {
-    padding: 10px;
+    padding: 0;
   }
 
   .mode-switch {
@@ -394,6 +682,15 @@ input {
   .phone-surface,
   .admin-surface {
     padding: 18px;
+  }
+
+  .mpesa-home {
+    width: 100%;
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    padding: 0;
   }
 
   input {

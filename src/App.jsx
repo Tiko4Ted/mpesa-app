@@ -1,15 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   Banknote,
+  Bell,
+  ChevronRight,
   CreditCard,
   Eye,
   EyeOff,
+  Home,
   KeyRound,
+  List,
   LoaderCircle,
   LogOut,
   Pencil,
   Plus,
+  ReceiptText,
   RefreshCcw,
+  Search,
   Shield,
   Smartphone,
   Trash2,
@@ -18,10 +24,19 @@ import {
 import { api } from './api'
 import './App.css'
 import appIcon from '../assets/images/icon.png'
-import airtimeIcon from '../assets/images/icons/assets_images_icons_iconairtime.png'
-import lipaIcon from '../assets/images/icons/assets_images_icons_iconlipa.png'
-import sendIcon from '../assets/images/icons/assets_images_icons_iconsend.png'
-import withdrawIcon from '../assets/images/icons/assets_images_icons_iconwithdraw.png'
+import airtimeIcon from '../assets/images/icons/assets_images_icons_iconairtimedark.png'
+import bundlesIcon from '../assets/images/icons/assets_images_icons_iconbundlesdark.png'
+import doMoreTiles from '../assets/images/icons/assets_images_icons_domoredark.png'
+import entertainmentBanner from '../assets/images/icons/assets_images_icons_entertainmentbannerdark.png'
+import financeBanner from '../assets/images/icons/assets_images_icons_financebannerdark.png'
+import homeIcon from '../assets/images/icons/assets_images_icons_iconhomedark.png'
+import intlIcon from '../assets/images/icons/assets_images_icons_iconintldark.png'
+import lipaIcon from '../assets/images/icons/assets_images_icons_iconlipadark.png'
+import scanIcon from '../assets/images/icons/assets_images_icons_scanicon.png'
+import sendIcon from '../assets/images/icons/assets_images_icons_iconsenddark.png'
+import tunukiwaIcon from '../assets/images/icons/assets_images_icons_icontunukiwadark.png'
+import withdrawIcon from '../assets/images/icons/assets_images_icons_iconwithdrawdark.png'
+import zuriIcon from '../assets/images/icons/assets_images_icons_zuriicon.png'
 
 const emptyAccount = {
   name: '',
@@ -85,7 +100,7 @@ const readSavedAccount = () => {
   return null;
 };
 
-function CustomerPanel() {
+function CustomerPanel({ onAuthChange }) {
   const [credentials, setCredentials] = useState({ phoneNumber: '', name: '', pin: '' });
   const [account, setAccount] = useState(readSavedAccount);
   const [hidden, setHidden] = useState(false);
@@ -93,10 +108,19 @@ function CustomerPanel() {
   const [error, setError] = useState('');
 
   const quickActions = [
-    ['Send', sendIcon],
-    ['Withdraw', withdrawIcon],
-    ['Airtime', airtimeIcon],
-    ['Lipa', lipaIcon]
+    ['Send Money', sendIcon],
+    ['Withdraw Cash', withdrawIcon],
+    ['Buy Airtime', airtimeIcon],
+    ['Lipa na M-PESA', lipaIcon]
+  ];
+
+  const serviceActions = [
+    ['M-PESA Home', homeIcon],
+    ['Bundles', bundlesIcon],
+    ['Global Pay', intlIcon],
+    ['Tunukiwa', tunukiwaIcon],
+    ['Scan QR', scanIcon],
+    ['Zuri', zuriIcon]
   ];
 
   const signIn = async (event) => {
@@ -108,6 +132,7 @@ function CustomerPanel() {
       const result = await api.customerLogin(credentials);
       setAccount(result.account);
       writeStorage('mpesa-account', JSON.stringify(result.account));
+      onAuthChange(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -118,12 +143,13 @@ function CustomerPanel() {
   const signOut = () => {
     removeStorage('mpesa-account');
     setAccount(null);
+    onAuthChange(false);
   };
 
   if (!account) {
     return (
-      <section className="phone-surface">
-        <div className="brand-row">
+      <section className="phone-surface login-screen">
+        <div className="login-brand">
           <img src={appIcon} alt="M-Pesa" />
           <div>
             <p>My OneApp</p>
@@ -174,48 +200,84 @@ function CustomerPanel() {
   }
 
   return (
-    <section className="phone-surface account-screen">
-      <div className="topbar">
-        <div>
-          <p>Good day</p>
+    <section className="phone-surface account-screen mpesa-home">
+      <div className="mpesa-status">
+        <span>9:41</span>
+        <span>4G 100%</span>
+      </div>
+
+      <div className="mpesa-header">
+        <div className="profile-chip">
+          <span>{account.name.slice(0, 1).toUpperCase()}</span>
+        </div>
+        <div className="header-copy">
+          <p>Good afternoon</p>
           <h1>{account.name}</h1>
         </div>
-        <button className="icon-button" onClick={signOut} aria-label="Sign out">
-          <LogOut size={18} />
+        <button className="round-tool" aria-label="Search">
+          <Search size={18} />
+        </button>
+        <button className="round-tool" aria-label="Notifications">
+          <Bell size={18} />
         </button>
       </div>
 
-      <div className="balance-panel">
-        <div className="balance-head">
-          <span>M-Pesa balance</span>
-          <button className="icon-button ghost" onClick={() => setHidden(!hidden)} aria-label="Toggle balance visibility">
+      <div className="mpesa-balance-card">
+        <div className="balance-topline">
+          <span>M-PESA Balance</span>
+          <button className="balance-eye" onClick={() => setHidden(!hidden)} aria-label="Toggle balance visibility">
             {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
-        <strong>{hidden ? 'KSh ****' : money(account.balance)}</strong>
-        <div className="fuliza-line">
+        <strong>{hidden ? 'Ksh ****' : money(account.balance).replace('KES', 'Ksh')}</strong>
+        <div className="fuliza-strip">
           <CreditCard size={16} />
-          Available Fuliza: {hidden ? 'KSh ****' : money(account.fuliza)}
+          Available Fuliza: {hidden ? 'Ksh ****' : money(account.fuliza).replace('KES', 'Ksh')}
         </div>
       </div>
 
-      <div className="quick-grid">
+      <div className="primary-actions">
         {quickActions.map(([label, icon]) => (
-          <button key={label} className="quick-action">
+          <button key={label} className="mpesa-action">
             <img src={icon} alt="" />
             <span>{label}</span>
           </button>
         ))}
       </div>
 
-      <div className="activity-list">
-        <div className="activity-item">
-          <Banknote size={18} />
-          <div>
-            <strong>Account synced</strong>
-            <span>{account.phoneNumber}</span>
-          </div>
+      <div className="statement-card">
+        <div>
+          <span>M-PESA Statements</span>
+          <strong>Manage My Line</strong>
         </div>
+        <ChevronRight size={20} />
+      </div>
+
+      <img className="mpesa-banner" src={financeBanner} alt="Invest, get loans, pay and transfer" />
+
+      <div className="service-grid">
+        {serviceActions.map(([label, icon]) => (
+          <button key={label} className="service-action">
+            <img src={icon} alt="" />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+
+      <img className="mpesa-banner small-banner" src={entertainmentBanner} alt="Baze games newspaper jobs" />
+
+      <div className="section-heading">
+        <h2>Explore & Discover Deals</h2>
+        <button>View all</button>
+      </div>
+      <img className="discover-tiles" src={doMoreTiles} alt="Explore and discover deals" />
+
+      <div className="bottom-tabs" aria-label="App sections">
+        <button className="active"><Home size={18} /><span>Home</span></button>
+        <button><Banknote size={18} /><span>Transact</span></button>
+        <button><ReceiptText size={18} /><span>Services</span></button>
+        <button><List size={18} /><span>History</span></button>
+        <button onClick={signOut}><LogOut size={18} /><span>Logout</span></button>
       </div>
     </section>
   );
@@ -441,21 +503,25 @@ function AdminPanel() {
 
 export default function App() {
   const [view, setView] = useState('customer');
+  const [customerAuthed, setCustomerAuthed] = useState(() => Boolean(readSavedAccount()));
+  const showModeSwitch = !(view === 'customer' && customerAuthed);
 
   return (
     <main className="app-shell">
       <div className="app-frame">
-        <div className="mode-switch" role="tablist" aria-label="Mode">
-          <button className={view === 'customer' ? 'active' : ''} onClick={() => setView('customer')}>
-            <Smartphone size={18} />
-            App
-          </button>
-          <button className={view === 'admin' ? 'active' : ''} onClick={() => setView('admin')}>
-            <UserRound size={18} />
-            Admin
-          </button>
-        </div>
-        {view === 'customer' ? <CustomerPanel /> : <AdminPanel />}
+        {showModeSwitch ? (
+          <div className="mode-switch" role="tablist" aria-label="Mode">
+            <button className={view === 'customer' ? 'active' : ''} onClick={() => setView('customer')}>
+              <Smartphone size={18} />
+              App
+            </button>
+            <button className={view === 'admin' ? 'active' : ''} onClick={() => setView('admin')}>
+              <UserRound size={18} />
+              Admin
+            </button>
+          </div>
+        ) : null}
+        {view === 'customer' ? <CustomerPanel onAuthChange={setCustomerAuthed} /> : <AdminPanel />}
       </div>
     </main>
   );
