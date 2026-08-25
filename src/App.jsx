@@ -17,6 +17,11 @@ import {
 } from 'lucide-react'
 import { api } from './api'
 import './App.css'
+import appIcon from '../assets/images/icon.png'
+import airtimeIcon from '../assets/images/icons/assets_images_icons_iconairtime.png'
+import lipaIcon from '../assets/images/icons/assets_images_icons_iconlipa.png'
+import sendIcon from '../assets/images/icons/assets_images_icons_iconsend.png'
+import withdrawIcon from '../assets/images/icons/assets_images_icons_iconwithdraw.png'
 
 const emptyAccount = {
   name: '',
@@ -42,22 +47,56 @@ const normalizeAccount = (account) => ({
 
 const normalizePhoneInput = (value) => value.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '').slice(0, 15);
 const normalizePinInput = (value) => value.replace(/\D/g, '').slice(0, 6);
+const readStorage = (key) => {
+  try {
+    return localStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+};
+
+const writeStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Storage can be unavailable in restricted webviews.
+  }
+};
+
+const removeStorage = (key) => {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Storage can be unavailable in restricted webviews.
+  }
+};
+
+const readSavedAccount = () => {
+  const saved = readStorage('mpesa-account');
+  if (!saved) return null;
+
+  try {
+    const parsed = JSON.parse(saved);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch {
+    removeStorage('mpesa-account');
+  }
+
+  return null;
+};
 
 function CustomerPanel() {
   const [credentials, setCredentials] = useState({ phoneNumber: '', name: '', pin: '' });
-  const [account, setAccount] = useState(() => {
-    const saved = localStorage.getItem('mpesa-account');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [account, setAccount] = useState(readSavedAccount);
   const [hidden, setHidden] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const quickActions = [
-    ['Send', '/assets/images/icons/assets_images_icons_iconsend.png'],
-    ['Withdraw', '/assets/images/icons/assets_images_icons_iconwithdraw.png'],
-    ['Airtime', '/assets/images/icons/assets_images_icons_iconairtime.png'],
-    ['Lipa', '/assets/images/icons/assets_images_icons_iconlipa.png']
+    ['Send', sendIcon],
+    ['Withdraw', withdrawIcon],
+    ['Airtime', airtimeIcon],
+    ['Lipa', lipaIcon]
   ];
 
   const signIn = async (event) => {
@@ -68,7 +107,7 @@ function CustomerPanel() {
     try {
       const result = await api.customerLogin(credentials);
       setAccount(result.account);
-      localStorage.setItem('mpesa-account', JSON.stringify(result.account));
+      writeStorage('mpesa-account', JSON.stringify(result.account));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -77,7 +116,7 @@ function CustomerPanel() {
   };
 
   const signOut = () => {
-    localStorage.removeItem('mpesa-account');
+    removeStorage('mpesa-account');
     setAccount(null);
   };
 
@@ -85,7 +124,7 @@ function CustomerPanel() {
     return (
       <section className="phone-surface">
         <div className="brand-row">
-          <img src="/assets/images/icon.png" alt="M-Pesa" />
+          <img src={appIcon} alt="M-Pesa" />
           <div>
             <p>My OneApp</p>
             <h1>Welcome back</h1>
@@ -183,7 +222,7 @@ function CustomerPanel() {
 }
 
 function AdminPanel() {
-  const [token, setToken] = useState(() => localStorage.getItem('mpesa-admin-token') || '');
+  const [token, setToken] = useState(() => readStorage('mpesa-admin-token'));
   const [password, setPassword] = useState('');
   const [accounts, setAccounts] = useState([]);
   const [form, setForm] = useState(emptyAccount);
@@ -218,7 +257,7 @@ function AdminPanel() {
 
     try {
       const result = await api.adminLogin(password);
-      localStorage.setItem('mpesa-admin-token', result.token);
+      writeStorage('mpesa-admin-token', result.token);
       setToken(result.token);
       setPassword('');
       setAccounts(await api.getAccounts(result.token));
@@ -276,7 +315,7 @@ function AdminPanel() {
   };
 
   const logout = () => {
-    localStorage.removeItem('mpesa-admin-token');
+    removeStorage('mpesa-admin-token');
     setToken('');
     setAccounts([]);
   };

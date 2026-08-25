@@ -1,5 +1,5 @@
 const isProd = import.meta.env.PROD;
-const API_URL = import.meta.env.VITE_API_URL || (isProd ? '/api' : 'http://localhost:3000/api');
+const API_URL = import.meta.env.VITE_API_URL || (isProd ? 'https://mpesa-oneapp.vercel.app/api' : 'http://localhost:3000/api');
 
 const request = async (endpoint, options = {}) => {
   const headers = {
