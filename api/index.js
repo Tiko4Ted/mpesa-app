@@ -31,6 +31,7 @@ const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret123';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
+app.set('trust proxy', 1);
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
   credentials: true
