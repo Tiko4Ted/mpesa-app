@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      EXPO_PUBLIC_API_URL: https://mpesa-admin.vercel.app
 
     steps:
       - name: Checkout Code
@@ -98,7 +100,12 @@ jobs:
         run: |
           set -o pipefail
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon 2>&1 | tee gradle-build.log
+          ./gradlew assembleRelease --no-daemon \
+            -PreactNativeArchitectures=armeabi-v7a,arm64-v8a \
+            -Pandroid.enableMinifyInReleaseBuilds=true \
+            -Pandroid.enableShrinkResourcesInReleaseBuilds=true \
+            -Pexpo.useLegacyPackaging=true \
+            2>&1 | tee gradle-build.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
             tail_output=$(tail -n 40 gradle-build.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
@@ -108,7 +115,7 @@ jobs:
 
       - name: Rename APK
         if: steps.build_apk.outcome == 'success'
-        run: mv android/app/build/outputs/apk/debug/app-debug.apk "My OneApp.apk"
+        run: mv android/app/build/outputs/apk/release/app-release.apk "My.OneApp.apk"
 
       - name: Create GitHub Release
         if: steps.build_apk.outcome == 'success'
@@ -116,7 +123,7 @@ jobs:
         with:
           tag_name: "v1.0.${{ github.run_number }}"
           name: "My OneApp Mobile Update (Build ${{ github.run_number }})"
-          files: "My OneApp.apk"
+          files: "My.OneApp.apk"
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

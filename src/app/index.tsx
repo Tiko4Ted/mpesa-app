@@ -6,7 +6,7 @@ import PinInput from '../components/PinInput';
 import Keypad from '../components/Keypad';
 import { getUserSession, saveUserSession, UserSession } from '../lib/storage';
 
-const DEFAULT_API_BASE_URL = 'https://mpesa-admin-portal.vercel.app';
+const DEFAULT_API_BASE_URL = 'https://mpesa-admin.vercel.app';
 const API_BASE_URL = (process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
 
 type LoginResponse = {
