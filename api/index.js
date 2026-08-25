@@ -30,10 +30,32 @@ const getPrisma = () => {
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret123';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const configuredOrigins = new Set(
+  (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
+const nativeOrigins = new Set([
+  'http://localhost',
+  'https://localhost',
+  'capacitor://localhost',
+  'ionic://localhost',
+  'file://'
+]);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (!configuredOrigins.size) return true;
+  if (configuredOrigins.has(origin) || nativeOrigins.has(origin)) return true;
+  return origin.startsWith('https://mpesa-oneapp') && origin.endsWith('.vercel.app');
+};
 
 app.set('trust proxy', 1);
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
+  origin: (origin, callback) => {
+    callback(null, isAllowedOrigin(origin) ? origin || true : false);
+  },
   credentials: true
 }));
 app.use(express.json());

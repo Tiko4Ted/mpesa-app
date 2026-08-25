@@ -19,4 +19,15 @@ describe('auth validation', () => {
     expect(response.status).toBe(200);
     expect(response.body.ok).toBe(true);
   });
+
+  test('allows Capacitor Android origin', async () => {
+    const response = await request(app)
+      .options('/api/login')
+      .set('Origin', 'https://localhost')
+      .set('Access-Control-Request-Method', 'POST')
+      .set('Access-Control-Request-Headers', 'content-type');
+
+    expect(response.status).toBe(204);
+    expect(response.headers['access-control-allow-origin']).toBe('https://localhost');
+  });
 });
