@@ -26,6 +26,7 @@ export default async function Home() {
         phoneNumber: account.phoneNumber,
         pin: account.pin,
         balance: account.balance,
+        fuliza: account.fuliza,
       }))}
     />
   );

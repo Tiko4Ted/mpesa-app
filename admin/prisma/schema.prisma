@@ -16,5 +16,6 @@ model Account {
   phoneNumber String   @unique
   pin         String
   balance     Float    @default(0.0)
+  fuliza      Float    @default(0.0)
   createdAt   DateTime @default(now())
 }

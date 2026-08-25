@@ -5,7 +5,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import BalanceCard from '../components/BalanceCard';
 import QuickActionIcon from '../components/QuickActionIcon';
-import { getUserSession, UserSession } from '../lib/storage';
+import { getUserSession, saveUserSession, UserSession } from '../lib/storage';
+
+const DEFAULT_API_BASE_URL = 'https://mpesa-admin.vercel.app';
+const API_BASE_URL = (process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
+
+type LoginResponse = {
+  success?: boolean;
+  error?: string;
+  account?: UserSession;
+};
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -32,12 +41,31 @@ export default function HomeScreen() {
     fetchSession();
   }, []);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
+
+    try {
+      if (session) {
+        const res = await fetch(`${API_BASE_URL}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: session.name,
+            phoneNumber: session.phoneNumber,
+            pin: session.pin,
+          }),
+        });
+        const data = await res.json().catch(() => ({})) as LoginResponse;
+
+        if (res.ok && data.account) {
+          await saveUserSession(data.account);
+          setSession(data.account);
+        }
+      }
+    } finally {
       setRefreshing(false);
-    }, 1500);
-  }, []);
+    }
+  }, [session]);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
@@ -95,7 +123,7 @@ export default function HomeScreen() {
           <BalanceCard 
             title="M-PESA Balance"
             balance={session ? 'Ksh ' + session.balance.toLocaleString(undefined, {minimumFractionDigits: 2}) : 'Ksh 0.00'}
-            fuliza="Ksh 420.30"
+            fuliza={session ? 'Ksh ' + (session.fuliza ?? 0).toLocaleString(undefined, {minimumFractionDigits: 2}) : 'Ksh 0.00'}
             gradientColors={['#00CC66', '#00C6FF']}
           />
           <BalanceCard 

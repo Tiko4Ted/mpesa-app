@@ -7,6 +7,7 @@ export interface UserSession {
   phoneNumber: string;
   pin: string;
   balance: number;
+  fuliza: number;
 }
 
 export const saveUserSession = async (session: UserSession) => {

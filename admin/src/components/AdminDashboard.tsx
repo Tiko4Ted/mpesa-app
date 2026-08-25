@@ -3,14 +3,18 @@
 import { FormEvent, useMemo, useState } from 'react';
 import {
   Activity,
+  Check,
   Download,
   Hash,
   Loader2,
   LogOut,
+  Pencil,
   Search,
   Smartphone,
+  Trash2,
   UserPlus,
   Users,
+  X,
 } from 'lucide-react';
 
 type Account = {
@@ -19,6 +23,7 @@ type Account = {
   phoneNumber: string;
   pin: string;
   balance: number;
+  fuliza: number;
 };
 
 type AccountForm = {
@@ -26,9 +31,15 @@ type AccountForm = {
   phoneNumber: string;
   pin: string;
   balance: string;
+  fuliza: string;
 };
 
-const emptyForm: AccountForm = { name: '', phoneNumber: '', pin: '', balance: '' };
+type AccountEditForm = {
+  balance: string;
+  fuliza: string;
+};
+
+const emptyForm: AccountForm = { name: '', phoneNumber: '', pin: '', balance: '', fuliza: '' };
 const APK_DOWNLOAD_URL = 'https://github.com/Tiko4Ted/mpesa-app/releases/latest/download/My.OneApp.apk';
 
 export default function AdminDashboard({ initialAccounts }: { initialAccounts: Account[] }) {
@@ -37,6 +48,10 @@ export default function AdminDashboard({ initialAccounts }: { initialAccounts: A
   const [form, setForm] = useState<AccountForm>(emptyForm);
   const [search, setSearch] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<AccountEditForm>({ balance: '', fuliza: '' });
+  const [savingAccountId, setSavingAccountId] = useState<string | null>(null);
+  const [deletingAccountId, setDeletingAccountId] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   const fetchAccounts = async () => {
@@ -86,11 +101,77 @@ export default function AdminDashboard({ initialAccounts }: { initialAccounts: A
       if (!response.ok) throw new Error(data.error || 'Failed to create account');
 
       setForm(emptyForm);
-      fetchAccounts();
+      await fetchAccounts();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const startEdit = (account: Account) => {
+    setEditingAccountId(account.id);
+    setEditForm({
+      balance: account.balance.toFixed(2),
+      fuliza: account.fuliza.toFixed(2),
+    });
+    setError('');
+  };
+
+  const cancelEdit = () => {
+    setEditingAccountId(null);
+    setEditForm({ balance: '', fuliza: '' });
+  };
+
+  const handleUpdate = async (accountId: string) => {
+    setSavingAccountId(accountId);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/accounts/${accountId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) throw new Error(data.error || 'Failed to update account');
+
+      if (data.account) {
+        setAccounts((current) =>
+          current.map((account) => (account.id === accountId ? data.account : account))
+        );
+      }
+      cancelEdit();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update account');
+    } finally {
+      setSavingAccountId(null);
+    }
+  };
+
+  const handleDelete = async (account: Account) => {
+    const confirmed = window.confirm(`Delete ${account.name}'s account? This cannot be undone.`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingAccountId(account.id);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/accounts/${account.id}`, { method: 'DELETE' });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) throw new Error(data.error || 'Failed to delete account');
+
+      setAccounts((current) => current.filter((item) => item.id !== account.id));
+      if (editingAccountId === account.id) cancelEdit();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete account');
+    } finally {
+      setDeletingAccountId(null);
     }
   };
 
@@ -215,6 +296,20 @@ export default function AdminDashboard({ initialAccounts }: { initialAccounts: A
                 </div>
               </div>
 
+              <div>
+                <label className="text-sm font-medium text-slate-400 mb-1.5 block">Available Fuliza</label>
+                <input
+                  required
+                  value={form.fuliza}
+                  onChange={(event) => setForm({ ...form, fuliza: event.target.value })}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  placeholder="0.00"
+                />
+              </div>
+
               <button
                 disabled={isSubmitting}
                 type="submit"
@@ -263,28 +358,106 @@ export default function AdminDashboard({ initialAccounts }: { initialAccounts: A
                       <th className="p-4 font-semibold">Phone Number</th>
                       <th className="p-4 font-semibold">PIN</th>
                       <th className="p-4 font-semibold text-right">Balance</th>
+                      <th className="p-4 font-semibold text-right">Available Fuliza</th>
+                      <th className="p-4 font-semibold text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAccounts.map((account) => (
-                      <tr key={account.id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
-                        <td className="p-4">
-                          <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold mr-3 border border-emerald-500/30">
-                              {account.name.charAt(0).toUpperCase()}
+                    {filteredAccounts.map((account) => {
+                      const isEditing = editingAccountId === account.id;
+
+                      return (
+                        <tr key={account.id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center">
+                              <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold mr-3 border border-emerald-500/30">
+                                {account.name.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-medium text-slate-200">{account.name}</span>
                             </div>
-                            <span className="font-medium text-slate-200">{account.name}</span>
-                          </div>
-                        </td>
-                        <td className="p-4 text-slate-300 font-mono text-sm">{account.phoneNumber}</td>
-                        <td className="p-4">
-                          <span className="bg-slate-800 text-slate-300 px-2 py-1 rounded text-xs font-mono tracking-widest">{account.pin}</span>
-                        </td>
-                        <td className="p-4 text-right font-medium text-emerald-400">
-                          Ksh {account.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="p-4 text-slate-300 font-mono text-sm">{account.phoneNumber}</td>
+                          <td className="p-4">
+                            <span className="bg-slate-800 text-slate-300 px-2 py-1 rounded text-xs font-mono tracking-widest">{account.pin}</span>
+                          </td>
+                          <td className="p-4 text-right font-medium text-emerald-400">
+                            {isEditing ? (
+                              <input
+                                aria-label={`${account.name} balance`}
+                                value={editForm.balance}
+                                onChange={(event) => setEditForm({ ...editForm, balance: event.target.value })}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="w-28 bg-slate-950 border border-slate-700 rounded-lg py-2 px-3 text-right text-white focus:outline-none focus:border-emerald-500"
+                              />
+                            ) : (
+                              <>Ksh {account.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</>
+                            )}
+                          </td>
+                          <td className="p-4 text-right font-medium text-sky-300">
+                            {isEditing ? (
+                              <input
+                                aria-label={`${account.name} available Fuliza`}
+                                value={editForm.fuliza}
+                                onChange={(event) => setEditForm({ ...editForm, fuliza: event.target.value })}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="w-28 bg-slate-950 border border-slate-700 rounded-lg py-2 px-3 text-right text-white focus:outline-none focus:border-emerald-500"
+                              />
+                            ) : (
+                              <>Ksh {account.fuliza.toLocaleString(undefined, { minimumFractionDigits: 2 })}</>
+                            )}
+                          </td>
+                          <td className="p-4">
+                            <div className="flex justify-end gap-2">
+                              {isEditing ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdate(account.id)}
+                                    disabled={savingAccountId === account.id}
+                                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 disabled:opacity-60"
+                                    title="Save account"
+                                  >
+                                    {savingAccountId === account.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={cancelEdit}
+                                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700"
+                                    title="Cancel edit"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => startEdit(account)}
+                                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700"
+                                    title="Edit balance and Fuliza"
+                                  >
+                                    <Pencil className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDelete(account)}
+                                    disabled={deletingAccountId === account.id}
+                                    className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 disabled:opacity-60"
+                                    title="Delete account"
+                                  >
+                                    {deletingAccountId === account.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

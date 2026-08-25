@@ -96,7 +96,8 @@ export default function LoginScreen() {
         typeof data.account.name !== 'string' ||
         typeof data.account.phoneNumber !== 'string' ||
         typeof data.account.pin !== 'string' ||
-        typeof data.account.balance !== 'number'
+        typeof data.account.balance !== 'number' ||
+        typeof data.account.fuliza !== 'number'
       ) {
         throw new Error('Invalid account response');
       }
@@ -105,7 +106,8 @@ export default function LoginScreen() {
         name: data.account.name,
         phoneNumber: data.account.phoneNumber,
         pin: data.account.pin,
-        balance: data.account.balance
+        balance: data.account.balance,
+        fuliza: data.account.fuliza
       };
       
       await saveUserSession(newSession);
