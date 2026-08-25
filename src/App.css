@@ -57,7 +57,7 @@
 }
 
 .login-screen,
-.admin-surface {
+.manager-surface {
   border: 1px solid rgba(24, 37, 28, 0.12);
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 24px 70px rgba(20, 58, 35, 0.16);
@@ -69,7 +69,7 @@
   overflow: hidden;
 }
 
-.admin-surface {
+.manager-surface {
   border-radius: 8px;
   padding: 22px;
   width: 100%;
@@ -77,7 +77,7 @@
 
 .login-brand,
 .topbar,
-.admin-header,
+.manager-header,
 .section-title,
 .header-actions,
 .balance-head,
@@ -123,7 +123,7 @@ h2 {
 }
 
 .form-grid,
-.admin-form {
+.manager-form {
   display: grid;
   gap: 14px;
 }
@@ -132,7 +132,151 @@ h2 {
   padding: 22px;
 }
 
-.admin-form {
+.pin-login-screen {
+  width: 390px;
+  max-width: 100%;
+  min-height: 780px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #101110;
+  color: #f6f7f6;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.native-shell .pin-login-screen {
+  width: 100%;
+  min-height: 100vh;
+  height: 100vh;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.pin-login-content {
+  padding: calc(env(safe-area-inset-top, 0px) + 58px) 28px 20px;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  text-align: center;
+}
+
+.pin-login-content h1 {
+  color: #ffffff;
+  font-size: 1.16rem;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.pin-avatar {
+  width: 104px;
+  height: 104px;
+  margin-top: 58px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #e7ece8, #bfc8c2);
+  color: #0d6f36;
+  font-size: 2.15rem;
+  font-weight: 900;
+}
+
+.pin-name {
+  margin-top: 18px;
+  color: #ffffff;
+  font-size: 1.02rem;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.pin-phone {
+  margin-top: 8px;
+  color: #d7d7d7;
+  font-size: 0.84rem;
+  line-height: 1.25;
+}
+
+.pin-phone strong {
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.pin-boxes {
+  margin-top: 34px;
+  display: grid;
+  grid-template-columns: repeat(4, 46px);
+  gap: 14px;
+}
+
+.pin-box {
+  width: 46px;
+  height: 46px;
+  border: 1px solid #565956;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+.pin-box.active {
+  border-color: #18b64d;
+}
+
+.pin-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.pin-error {
+  width: 100%;
+  margin-top: 18px;
+  text-align: left;
+}
+
+.pin-loader {
+  margin-top: 18px;
+  color: #18b64d;
+}
+
+.pin-keypad {
+  padding: 14px 34px calc(env(safe-area-inset-bottom, 0px) + 26px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 22px;
+}
+
+.pin-key {
+  min-height: 58px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #f5f6f5;
+  font-size: 1.55rem;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.pin-key:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pin-key:disabled {
+  color: #747874;
+}
+
+.pin-key.backspace {
+  color: #21b84f;
+  font-size: 1.42rem;
+}
+
+.pin-key.blank {
+  min-height: 58px;
+}
+
+.manager-form {
   grid-template-columns: minmax(140px, 1.1fr) minmax(170px, 1.2fr) minmax(88px, 0.7fr) minmax(116px, 0.8fr) minmax(116px, 0.8fr) auto;
   align-items: end;
   margin: 20px 0;
@@ -204,7 +348,7 @@ input {
 }
 
 .topbar,
-.admin-header {
+.manager-header {
   justify-content: space-between;
   gap: 16px;
 }
@@ -530,20 +674,6 @@ input {
   display: none;
 }
 
-.statement-button {
-  width: 100%;
-  min-height: 44px;
-  margin-top: 12px;
-  border: 1px solid #21b84f;
-  border-radius: 9px;
-  background: transparent;
-  color: #21b84f;
-  font-size: 0.86rem;
-  font-weight: 800;
-  position: relative;
-  z-index: 1;
-}
-
 .quick-actions-card {
   margin: 0 20px 24px;
   padding: 18px 20px 20px;
@@ -745,7 +875,7 @@ input {
     box-shadow: none;
   }
 
-  .admin-form {
+  .manager-form {
     grid-template-columns: 1fr;
     gap: 16px;
   }
@@ -783,8 +913,14 @@ input {
   }
 
   .phone-surface,
-  .admin-surface {
+  .manager-surface {
     padding: 18px;
+  }
+
+  .pin-login-screen {
+    min-height: 100vh;
+    border-radius: 0;
+    padding: 0;
   }
 
   .mpesa-home {

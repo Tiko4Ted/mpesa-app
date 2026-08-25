@@ -20,6 +20,12 @@ describe('auth validation', () => {
     expect(response.body.ok).toBe(true);
   });
 
+  test('rejects customer account refresh without a token', async () => {
+    const response = await request(app).get('/api/customer/account');
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe('Access denied');
+  });
+
   test('allows Capacitor Android origin', async () => {
     const response = await request(app)
       .options('/api/login')

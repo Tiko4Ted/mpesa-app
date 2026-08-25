@@ -87,6 +87,25 @@ const authenticateAdmin = (req, res, next) => {
   }
 };
 
+const authenticateCustomer = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Access denied' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'CUSTOMER' || !decoded.accountId) {
+      return res.status(403).json({ error: 'Customer access required' });
+    }
+    req.customer = decoded;
+    next();
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired' });
+    }
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -134,7 +153,18 @@ app.post('/api/login', loginLimiter, validate(accountLoginSchema), async (req, r
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    res.json({ success: true, account });
+    const token = jwt.sign({ role: 'CUSTOMER', accountId: account.id }, JWT_SECRET, { expiresIn: '12h' });
+    res.json({ success: true, account, token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/customer/account', authenticateCustomer, async (req, res) => {
+  try {
+    const account = await getPrisma().account.findUnique({ where: { id: req.customer.accountId } });
+    if (!account) return res.status(404).json({ error: 'Account not found' });
+    res.json({ account });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

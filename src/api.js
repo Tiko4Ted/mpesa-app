@@ -27,11 +27,15 @@ const request = async (endpoint, options = {}) => {
   return data;
 };
 
-export const api = {
+const customerEndpoints = {
   customerLogin: (credentials) => request('/login', {
     method: 'POST',
     body: JSON.stringify(credentials)
   }),
+  getCustomerAccount: (token) => request('/customer/account', { token })
+};
+
+const adminEndpoints = import.meta.env.VITE_NATIVE_BUILD === 'true' ? {} : {
   adminLogin: (password) => request('/admin/login', {
     method: 'POST',
     body: JSON.stringify({ password })
@@ -51,4 +55,9 @@ export const api = {
     method: 'DELETE',
     token
   })
+};
+
+export const api = {
+  ...customerEndpoints,
+  ...adminEndpoints
 };

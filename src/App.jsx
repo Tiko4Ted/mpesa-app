@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Capacitor } from '@capacitor/core'
 import {
   Banknote,
   Bell,
@@ -38,6 +39,8 @@ import tunukiwaIcon from '../assets/images/icons/assets_images_icons_icontunukiw
 import withdrawIcon from '../assets/images/icons/assets_images_icons_iconwithdrawdark.png'
 import zuriIcon from '../assets/images/icons/assets_images_icons_zuriicon.png'
 
+const NATIVE_BUILD = import.meta.env.VITE_NATIVE_BUILD === 'true';
+
 const emptyAccount = {
   name: '',
   phoneNumber: '',
@@ -61,8 +64,14 @@ const normalizeAccount = (account) => ({
 });
 
 const normalizePhoneInput = (value) => value.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '').slice(0, 15);
-const normalizePinInput = (value) => value.replace(/\D/g, '').slice(0, 6);
+const normalizePinInput = (value) => value.replace(/\D/g, '').slice(0, 4);
 const getFirstName = (name) => name.trim().split(/\s+/)[0] || 'there';
+const getInitials = (name) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'MP';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+};
 const getGreeting = (date = new Date()) => {
   const hour = date.getHours();
   if (hour < 12) return 'Good morning,';
@@ -93,23 +102,109 @@ const removeStorage = (key) => {
   }
 };
 
-const readSavedAccount = () => {
-  const saved = readStorage('mpesa-account');
+const readJsonStorage = (key) => {
+  const saved = readStorage(key);
   if (!saved) return null;
 
   try {
     const parsed = JSON.parse(saved);
     if (parsed && typeof parsed === 'object') return parsed;
   } catch {
-    removeStorage('mpesa-account');
+    removeStorage(key);
   }
 
   return null;
 };
 
+const getProfileFromAccount = (account) => {
+  if (!account?.name || !account?.phoneNumber) return null;
+  return {
+    accountId: account.id || '',
+    name: account.name,
+    phoneNumber: account.phoneNumber
+  };
+};
+
+const readSavedProfile = () => {
+  const profile = readJsonStorage('mpesa-profile');
+  if (profile?.name && profile?.phoneNumber) return profile;
+
+  const legacyAccount = readJsonStorage('mpesa-account');
+  const migrated = getProfileFromAccount(legacyAccount);
+  if (migrated) {
+    writeStorage('mpesa-profile', JSON.stringify(migrated));
+    removeStorage('mpesa-account');
+    return migrated;
+  }
+
+  return null;
+};
+
+const saveProfile = (account) => {
+  const profile = getProfileFromAccount(account);
+  if (!profile) return null;
+  writeStorage('mpesa-profile', JSON.stringify(profile));
+  removeStorage('mpesa-account');
+  return profile;
+};
+
+const isNativeApp = () => {
+  if (NATIVE_BUILD) return true;
+  if (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.()) return true;
+  return Capacitor.isNativePlatform();
+};
+
+function PinLogin({ profile, pin, loading, error, onDigit, onBackspace }) {
+  const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'backspace'];
+
+  return (
+    <section className="phone-surface pin-login-screen">
+      <div className="pin-login-content">
+        <h1>Enter your M-PESA PIN</h1>
+        <div className="pin-avatar" aria-hidden="true">{getInitials(profile.name)}</div>
+        <p className="pin-name">{profile.name}</p>
+        <p className="pin-phone"><strong>Phone Number</strong> {profile.phoneNumber}</p>
+
+        <div className="pin-boxes" aria-label="M-PESA PIN">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <span className={`pin-box ${index === pin.length ? 'active' : ''}`} key={index}>
+              {index < pin.length ? <span className="pin-dot" /> : null}
+            </span>
+          ))}
+        </div>
+
+        {error ? <p className="error-text pin-error">{error}</p> : null}
+        {loading ? <LoaderCircle className="spin pin-loader" size={22} /> : null}
+      </div>
+
+      <div className="pin-keypad" aria-label="PIN keypad">
+        {keys.map((key, index) => {
+          if (!key) return <span className="pin-key blank" key={`blank-${index}`} />;
+          if (key === 'backspace') {
+            return (
+              <button className="pin-key backspace" key={key} onClick={onBackspace} aria-label="Delete digit" type="button">
+                <span aria-hidden="true">⌫</span>
+              </button>
+            );
+          }
+
+          return (
+            <button className="pin-key" key={key} onClick={() => onDigit(key)} disabled={loading} type="button">
+              {key}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function CustomerPanel({ onAuthChange }) {
+  const [profile, setProfile] = useState(readSavedProfile);
   const [credentials, setCredentials] = useState({ phoneNumber: '', name: '', pin: '' });
-  const [account, setAccount] = useState(readSavedAccount);
+  const [pin, setPin] = useState('');
+  const [customerToken, setCustomerToken] = useState('');
+  const [account, setAccount] = useState(null);
   const [hidden, setHidden] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [loading, setLoading] = useState(false);
@@ -135,26 +230,57 @@ function CustomerPanel({ onAuthChange }) {
     ['Zuri', zuriIcon]
   ];
 
-  const signIn = async (event) => {
-    event.preventDefault();
+  const completeCustomerLogin = (result) => {
+    const savedProfile = saveProfile(result.account);
+    if (savedProfile) setProfile(savedProfile);
+    setAccount(result.account);
+    setCustomerToken(result.token || '');
+    setCredentials({ phoneNumber: result.account.phoneNumber, name: result.account.name, pin: '' });
+    setPin('');
+    onAuthChange(true);
+  };
+
+  const loginWithCredentials = async (loginCredentials) => {
+    if (loading) return;
     setLoading(true);
     setError('');
 
     try {
-      const result = await api.customerLogin(credentials);
-      setAccount(result.account);
-      writeStorage('mpesa-account', JSON.stringify(result.account));
-      onAuthChange(true);
+      const result = await api.customerLogin(loginCredentials);
+      completeCustomerLogin(result);
     } catch (err) {
       setError(err.message);
+      setPin('');
     } finally {
       setLoading(false);
     }
   };
 
+  const signIn = (event) => {
+    event.preventDefault();
+    loginWithCredentials(credentials);
+  };
+
+  const handlePinDigit = (digit) => {
+    if (loading || !profile) return;
+    if (pin.length >= 4) return;
+
+    const next = `${pin}${digit}`.slice(0, 4);
+    setPin(next);
+
+    if (next.length === 4) {
+      loginWithCredentials({
+        phoneNumber: profile.phoneNumber,
+        name: profile.name,
+        pin: next
+      });
+    }
+  };
+
   const signOut = () => {
-    removeStorage('mpesa-account');
+    setCustomerToken('');
     setAccount(null);
+    setPin('');
     onAuthChange(false);
   };
 
@@ -163,7 +289,49 @@ function CustomerPanel({ onAuthChange }) {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (!account || !customerToken) return undefined;
+
+    let active = true;
+    const refreshAccount = async () => {
+      try {
+        const result = await api.getCustomerAccount(customerToken);
+        if (!active) return;
+        setAccount(result.account);
+        const updatedProfile = saveProfile(result.account);
+        if (updatedProfile) setProfile(updatedProfile);
+      } catch (err) {
+        if (!active) return;
+        setError(err.message);
+        setCustomerToken('');
+        setAccount(null);
+        setPin('');
+        onAuthChange(false);
+      }
+    };
+
+    refreshAccount();
+    const refreshTimer = window.setInterval(refreshAccount, 1000);
+    return () => {
+      active = false;
+      window.clearInterval(refreshTimer);
+    };
+  }, [account?.id, customerToken, onAuthChange]);
+
   if (!account) {
+    if (profile) {
+      return (
+        <PinLogin
+          profile={profile}
+          pin={pin}
+          loading={loading}
+          error={error}
+          onDigit={handlePinDigit}
+          onBackspace={() => setPin((current) => current.slice(0, -1))}
+        />
+      );
+    }
+
     return (
       <section className="phone-surface login-screen">
         <div className="login-brand">
@@ -247,7 +415,6 @@ function CustomerPanel({ onAuthChange }) {
           <CreditCard size={16} />
           Available Fuliza: {hidden ? 'Ksh ****' : money(account.fuliza).replace('KES', 'Ksh')}
         </div>
-        <button className="statement-button">View statements</button>
       </div>
 
       <div className="quick-actions-card">
@@ -398,7 +565,7 @@ function AdminPanel() {
 
   if (!token) {
     return (
-      <section className="admin-surface">
+      <section className="manager-surface">
         <div className="section-title">
           <Shield size={20} />
           <div>
@@ -427,8 +594,8 @@ function AdminPanel() {
   }
 
   return (
-    <section className="admin-surface">
-      <div className="admin-header">
+    <section className="manager-surface">
+      <div className="manager-header">
         <div className="section-title">
           <Shield size={20} />
           <div>
@@ -446,7 +613,7 @@ function AdminPanel() {
         </div>
       </div>
 
-      <form className="admin-form" onSubmit={saveAccount}>
+      <form className="manager-form" onSubmit={saveAccount}>
         <label>
           Name
           <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} autoComplete="name" placeholder="Jane Wanjiku" />
@@ -515,11 +682,23 @@ function AdminPanel() {
   );
 }
 
-export default function App() {
+function NativeApp() {
+  return (
+    <main className="app-shell native-shell">
+      <div className="app-frame">
+        <CustomerPanel onAuthChange={() => {}} />
+      </div>
+    </main>
+  );
+}
+
+function WebApp() {
   const [view, setView] = useState('customer');
-  const [customerAuthed, setCustomerAuthed] = useState(() => Boolean(readSavedAccount()));
-  const showModeSwitch = !(view === 'customer' && customerAuthed);
-  const shellClass = showModeSwitch ? 'app-shell' : 'app-shell native-shell';
+  const [customerAuthed, setCustomerAuthed] = useState(false);
+  const nativeApp = isNativeApp();
+  const activeView = nativeApp ? 'customer' : view;
+  const showModeSwitch = !nativeApp && !(activeView === 'customer' && customerAuthed);
+  const shellClass = nativeApp || !showModeSwitch ? 'app-shell native-shell' : 'app-shell';
 
   return (
     <main className={shellClass}>
@@ -536,8 +715,10 @@ export default function App() {
             </button>
           </div>
         ) : null}
-        {view === 'customer' ? <CustomerPanel onAuthChange={setCustomerAuthed} /> : <AdminPanel />}
+        {activeView === 'customer' ? <CustomerPanel onAuthChange={setCustomerAuthed} /> : <AdminPanel />}
       </div>
     </main>
   );
 }
+
+export default NATIVE_BUILD ? NativeApp : WebApp;
