@@ -4,6 +4,7 @@ import {
   Banknote,
   Bell,
   ChevronRight,
+  ChevronUp,
   CreditCard,
   Eye,
   EyeOff,
@@ -20,25 +21,32 @@ import {
   Shield,
   Smartphone,
   Trash2,
-  UserRound
+  UserRound,
+  Send,
+  ShoppingBasket,
+  ArrowDownToLine,
+  ArrowUpDown,
+  Phone,
+  Gift,
+  Wallet,
+  ScanLine,
+  Grip
 } from 'lucide-react'
 import { api } from './api'
 import './App.css'
 import appIcon from '../assets/images/icon.png'
-import airtimeIcon from '../assets/images/icons/assets_images_icons_iconairtimedark.png'
-import bundlesIcon from '../assets/images/icons/assets_images_icons_iconbundlesdark.png'
 import doMoreTiles from '../assets/images/icons/assets_images_icons_domoredark.png'
 import entertainmentBanner from '../assets/images/icons/assets_images_icons_entertainmentbannerdark.png'
 import financeBanner from '../assets/images/icons/assets_images_icons_financebannerdark.png'
-import homeIcon from '../assets/images/icons/assets_images_icons_iconhomedark.png'
-import intlIcon from '../assets/images/icons/assets_images_icons_iconintldark.png'
-import lipaIcon from '../assets/images/icons/assets_images_icons_iconlipadark.png'
-import scanIcon from '../assets/images/icons/assets_images_icons_scanicon.png'
 import sendIcon from '../assets/images/icons/assets_images_icons_iconsenddark.png'
-import tunukiwaIcon from '../assets/images/icons/assets_images_icons_icontunukiwadark.png'
+import lipaIcon from '../assets/images/icons/assets_images_icons_iconlipadark.png'
 import withdrawIcon from '../assets/images/icons/assets_images_icons_iconwithdrawdark.png'
-import zuriIcon from '../assets/images/icons/assets_images_icons_zuriicon.png'
-
+import bundlesIcon from '../assets/images/icons/assets_images_icons_iconbundlesdark.png'
+import airtimeIcon from '../assets/images/icons/assets_images_icons_iconairtimedark.png'
+import tunukiwaIcon from '../assets/images/icons/assets_images_icons_icontunukiwadark.png'
+import intlIcon from '../assets/images/icons/assets_images_icons_iconintldark.png'
+import scanIcon from '../assets/images/icons/assets_images_icons_scanicon.png'
+import frequentsIcon from '../assets/images/icons/assets_images_icons_frequentsicondark.png'
 const NATIVE_BUILD = import.meta.env.VITE_NATIVE_BUILD === 'true';
 
 const emptyAccount = {
@@ -211,23 +219,21 @@ function CustomerPanel({ onAuthChange }) {
   const [error, setError] = useState('');
 
   const quickActions = [
-    ['Send Money', sendIcon],
-    ['Lipa na M-PESA', lipaIcon],
-    ['Withdraw Money', withdrawIcon],
-    ['Buy Bundles', bundlesIcon],
-    ['Airtime Top up', tunukiwaIcon],
-    ['Bonga Loyalty', airtimeIcon],
-    ['Pochi Wallet', homeIcon],
-    ['Add Action', null]
+    ['Send Money', sendIcon, '#3a1f1e', false],
+    ['Lipa na M-PESA', lipaIcon, '#1e2b24', false],
+    ['Withdraw Money', withdrawIcon, '#1e2b24', false],
+    ['Buy Bundles', bundlesIcon, '#3a1f1e', false],
+    ['Airtime Top up', airtimeIcon, '#1e2b24', false],
+    ['Bonga Loyalty', tunukiwaIcon, '#1e2b24', false],
+    ['Pochi Wallet', intlIcon, '#1e2b24', false],
+    ['Add Action', Plus, '#2b2d2c', '#a8adaa']
   ];
 
-  const serviceActions = [
-    ['M-PESA Home', homeIcon],
-    ['Bundles', bundlesIcon],
-    ['Global Pay', intlIcon],
-    ['Tunukiwa', tunukiwaIcon],
-    ['Scan QR', scanIcon],
-    ['Zuri', zuriIcon]
+  const frequentApps = [
+    ['Hustler Fund', Grip, '#444'],
+    ['M-Shwari', frequentsIcon, 'transparent'],
+    ['Nyota', Grip, '#8a5a3a'],
+    ['M-Pesa', appIcon, 'transparent']
   ];
 
   const completeCustomerLogin = (result) => {
@@ -387,34 +393,44 @@ function CustomerPanel({ onAuthChange }) {
   return (
     <section className="phone-surface account-screen mpesa-home">
       <div className="mpesa-header">
-        <div className="profile-chip">
-          <span>{account.name.slice(0, 1).toUpperCase()}</span>
+        <div className="profile-chip-wrapper">
+          <div className="profile-chip">
+            <img src={appIcon} alt="" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
+          </div>
+          <div className="status-dot"></div>
         </div>
         <div className="header-copy">
           <p>{getGreeting(now)}</p>
           <h1>{getFirstName(account.name)} <span aria-hidden="true">👋</span></h1>
         </div>
         <button className="round-tool notify-tool" aria-label="Notifications">
-          <Bell size={18} />
+          <Bell size={20} />
           <span>1</span>
         </button>
         <button className="round-tool" aria-label="Search">
-          <Search size={18} />
+          <Search size={20} />
         </button>
       </div>
 
       <div className="mpesa-balance-card">
         <div className="balance-topline">
           <span>M-PESA Balance</span>
+        </div>
+        <div className="balance-amount-row">
+          <strong>{hidden ? 'Ksh ****' : money(account.balance).replace('KES', 'Ksh')}</strong>
           <button className="balance-eye" onClick={() => setHidden(!hidden)} aria-label="Toggle balance visibility">
-            {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
+            {hidden ? <EyeOff size={22} /> : <Eye size={22} />}
           </button>
         </div>
-        <strong>{hidden ? 'Ksh ****' : money(account.balance).replace('KES', 'Ksh')}</strong>
         <div className="fuliza-strip">
-          <CreditCard size={16} />
           Available Fuliza: {hidden ? 'Ksh ****' : money(account.fuliza).replace('KES', 'Ksh')}
         </div>
+        <button className="view-statements-btn">View statements</button>
+      </div>
+
+      <div className="slider-dots">
+        <div className="dot active"></div>
+        <div className="dot"></div>
       </div>
 
       <div className="quick-actions-card">
@@ -423,10 +439,14 @@ function CustomerPanel({ onAuthChange }) {
           <button>View all <ChevronRight size={16} /></button>
         </div>
         <div className="primary-actions">
-          {quickActions.map(([label, icon]) => (
+          {quickActions.map(([label, IconOrImage, bg, color]) => (
             <button key={label} className="mpesa-action">
-              <span className="action-icon">
-                {icon ? <img src={icon} alt="" /> : <Plus size={26} />}
+              <span className="action-icon-circle" style={{ background: bg, color: color || undefined }}>
+                {typeof IconOrImage === 'string' ? (
+                  <img src={IconOrImage} alt={label} style={{ width: 26, height: 26, objectFit: 'contain' }} />
+                ) : (
+                  <IconOrImage size={24} strokeWidth={1.5} />
+                )}
               </span>
               <span>{label}</span>
             </button>
@@ -434,31 +454,50 @@ function CustomerPanel({ onAuthChange }) {
         </div>
       </div>
 
-      <img className="mpesa-banner" src={financeBanner} alt="Invest, get loans, pay and transfer" />
+      <div className="frequents-card">
+        <div className="frequents-head">
+          <h2>Frequents</h2>
+          <button><ChevronUp size={20} color="#a1a1a1" /></button>
+        </div>
+        
+        <div className="frequents-tabs">
+          <button className="active">Apps</button>
+          <button>Send</button>
+          <button>Pay</button>
+          <button>Bundles</button>
+        </div>
 
-      <div className="service-grid">
-        {serviceActions.map(([label, icon]) => (
-          <button key={label} className="service-action">
-            <img src={icon} alt="" />
-            <span>{label}</span>
-          </button>
-        ))}
+        <div className="frequents-grid">
+          {frequentApps.map(([label, IconOrImage, color]) => (
+            <button key={label} className="frequent-item">
+              <div className="freq-icon" style={{ backgroundColor: color }}>
+                {typeof IconOrImage === 'string' ? (
+                  <img src={IconOrImage} alt={label} style={{ width: '100%', height: '100%', borderRadius: 8, objectFit: 'cover' }} />
+                ) : (
+                  <IconOrImage size={20} color="white" />
+                )}
+              </div>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+        
+        <button className="scan-to-pay-btn">
+          <img src={scanIcon} alt="Scan to pay" style={{ width: 22, height: 22, marginRight: 6 }} />
+          Scan to pay
+        </button>
       </div>
 
-      <img className="mpesa-banner small-banner" src={entertainmentBanner} alt="Baze games newspaper jobs" />
-
       <div className="section-heading">
-        <h2>Explore & Discover Deals</h2>
-        <button>View all</button>
+        <h2>Explore & Discover Deals <span aria-hidden="true">🔥</span></h2>
       </div>
       <img className="discover-tiles" src={doMoreTiles} alt="Explore and discover deals" />
 
       <div className="bottom-tabs" aria-label="App sections">
-        <button className="active"><Home size={18} /><span>Home</span></button>
-        <button><Banknote size={18} /><span>Transact</span></button>
-        <button><ReceiptText size={18} /><span>Services</span></button>
-        <button><List size={18} /><span>History</span></button>
-        <button onClick={signOut}><LogOut size={18} /><span>Logout</span></button>
+        <button className="active"><Home size={22} /><span>Home</span></button>
+        <button><Banknote size={22} /><span>Transact</span></button>
+        <button><ReceiptText size={22} /><span>Services</span></button>
+        <button><List size={22} /><span>Grow</span></button>
       </div>
     </section>
   );
