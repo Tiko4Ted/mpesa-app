@@ -497,14 +497,14 @@ input {
 }
 
 .mpesa-home {
-  width: 390px;
-  max-width: 100%;
-  max-height: min(860px, calc(100vh - 86px));
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 0;
   background: #121212;
   color: #f6f7f6;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
   overflow-y: auto;
   position: relative;
   scrollbar-width: none; /* Firefox */
@@ -800,8 +800,8 @@ input {
 }
 
 .action-icon-circle {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: grid;
   place-items: center;

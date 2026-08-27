@@ -458,9 +458,9 @@ function CustomerPanel({ onAuthChange }) {
             <button key={label} className="mpesa-action">
               <span className="action-icon-circle" style={{ background: bg, color: color || undefined }}>
                 {typeof IconOrImage === 'string' ? (
-                  <img src={IconOrImage} alt={label} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+                  <img src={IconOrImage} alt={label} style={{ width: 32, height: 32, objectFit: 'contain' }} />
                 ) : (
-                  <IconOrImage size={20} strokeWidth={1.5} />
+                  <IconOrImage size={32} strokeWidth={1.5} />
                 )}
               </span>
               <span>{label}</span>
