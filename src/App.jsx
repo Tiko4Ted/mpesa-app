@@ -219,14 +219,14 @@ function CustomerPanel({ onAuthChange }) {
   const [error, setError] = useState('');
 
   const quickActions = [
-    ['Send Money', sendIcon, '#3a1f1e', false],
-    ['Lipa na M-PESA', lipaIcon, '#1e2b24', false],
-    ['Withdraw Money', withdrawIcon, '#1e2b24', false],
-    ['Buy Bundles', bundlesIcon, '#3a1f1e', false],
-    ['Airtime Top up', airtimeIcon, '#1e2b24', false],
-    ['Bonga Loyalty', tunukiwaIcon, '#1e2b24', false],
-    ['Pochi Wallet', intlIcon, '#1e2b24', false],
-    ['Add Action', Plus, '#2b2d2c', '#a8adaa']
+    ['Send\nMoney', sendIcon, '#3a1f1e', false],
+    ['Lipa na\nM-PESA', lipaIcon, '#1e2b24', false],
+    ['Withdraw\nMoney', withdrawIcon, '#1e2b24', false],
+    ['Buy\nBundles', bundlesIcon, '#3a1f1e', false],
+    ['Airtime\nTop up', airtimeIcon, '#1e2b24', false],
+    ['Bonga\nLoyalty', tunukiwaIcon, '#1e2b24', false],
+    ['Pochi\nWallet', intlIcon, '#1e2b24', false],
+    ['Add\nAction', Plus, '#2b2d2c', '#a8adaa']
   ];
 
   const frequentApps = [
@@ -394,8 +394,8 @@ function CustomerPanel({ onAuthChange }) {
     <section className="phone-surface account-screen mpesa-home">
       <div className="mpesa-header">
         <div className="profile-chip-wrapper">
-          <div className="profile-chip">
-            <img src={appIcon} alt="" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
+          <div className="profile-chip initials-avatar">
+            {getInitials(account.name)}
           </div>
           <div className="status-dot"></div>
         </div>
@@ -412,20 +412,35 @@ function CustomerPanel({ onAuthChange }) {
         </button>
       </div>
 
-      <div className="mpesa-balance-card">
-        <div className="balance-topline">
-          <span>M-PESA Balance</span>
+      <div className="balance-carousel">
+        <div className="mpesa-balance-card">
+          <div className="balance-topline">
+            <span>M-PESA Balance</span>
+          </div>
+          <div className="balance-amount-row">
+            <strong>{hidden ? 'Ksh ****' : money(account.balance).replace('KES', 'Ksh')}</strong>
+            <button className="balance-eye" onClick={() => setHidden(!hidden)} aria-label="Toggle balance visibility">
+              {hidden ? <EyeOff size={22} /> : <Eye size={22} />}
+            </button>
+          </div>
+          <div className="fuliza-strip">
+            Available Fuliza: {hidden ? 'Ksh ****' : money(account.fuliza).replace('KES', 'Ksh')}
+          </div>
+          <button className="view-statements-btn">View statements</button>
         </div>
-        <div className="balance-amount-row">
-          <strong>{hidden ? 'Ksh ****' : money(account.balance).replace('KES', 'Ksh')}</strong>
-          <button className="balance-eye" onClick={() => setHidden(!hidden)} aria-label="Toggle balance visibility">
-            {hidden ? <EyeOff size={22} /> : <Eye size={22} />}
-          </button>
+
+        <div className="airtime-balance-card">
+          <div className="balance-topline">
+            <span>My Balance</span>
+          </div>
+          <div className="balance-amount-row">
+            <strong>Airtime</strong>
+          </div>
+          <div className="balance-amount-row">
+            <strong>{hidden ? 'Ksh ****' : 'Ksh 0.00'}</strong>
+          </div>
+          <button className="view-statements-btn">Buy Airtime</button>
         </div>
-        <div className="fuliza-strip">
-          Available Fuliza: {hidden ? 'Ksh ****' : money(account.fuliza).replace('KES', 'Ksh')}
-        </div>
-        <button className="view-statements-btn">View statements</button>
       </div>
 
       <div className="slider-dots">
@@ -443,9 +458,9 @@ function CustomerPanel({ onAuthChange }) {
             <button key={label} className="mpesa-action">
               <span className="action-icon-circle" style={{ background: bg, color: color || undefined }}>
                 {typeof IconOrImage === 'string' ? (
-                  <img src={IconOrImage} alt={label} style={{ width: 26, height: 26, objectFit: 'contain' }} />
+                  <img src={IconOrImage} alt={label} style={{ width: 22, height: 22, objectFit: 'contain' }} />
                 ) : (
-                  <IconOrImage size={24} strokeWidth={1.5} />
+                  <IconOrImage size={20} strokeWidth={1.5} />
                 )}
               </span>
               <span>{label}</span>

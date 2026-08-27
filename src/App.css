@@ -548,6 +548,13 @@ input {
   place-items: center;
 }
 
+.profile-chip.initials-avatar {
+  background: linear-gradient(135deg, #e7ece8, #bfc8c2);
+  color: #0d6f36;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
 .status-dot {
   position: absolute;
   bottom: 0;
@@ -622,14 +629,29 @@ input {
   border: 2px solid #121212;
 }
 
-.mpesa-balance-card {
-  margin: 12px 16px 16px;
+.balance-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  padding: 0 16px;
+  margin: 12px 0 16px;
+  scrollbar-width: none;
+}
+.balance-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.mpesa-balance-card, .airtime-balance-card {
+  flex: 0 0 88%;
+  scroll-snap-align: center;
   padding: 16px;
   border-radius: 14px;
   background: #171c19;
   position: relative;
   overflow: hidden;
   z-index: 1;
+  margin: 0;
 }
 
 .mpesa-balance-card::before {
@@ -639,6 +661,19 @@ input {
   border-radius: 14px;
   padding: 2px;
   background: linear-gradient(135deg, #0ee349, #0a4f29 40%, #03140d);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  z-index: -1;
+}
+
+.airtime-balance-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 2px;
+  background: linear-gradient(135deg, #0ee349, #0bd3d3 40%, #03140d);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
@@ -759,9 +794,14 @@ input {
   text-align: center;
 }
 
+.mpesa-action span:last-child {
+  white-space: pre-line;
+  line-height: 1.25;
+}
+
 .action-icon-circle {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: grid;
   place-items: center;
