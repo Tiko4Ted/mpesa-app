@@ -1,7 +1,7 @@
 .app-shell {
   min-height: 100vh;
   padding: 24px;
-  background: #101110;
+  background: #121212;
   display: grid;
   place-items: center;
 }
@@ -17,7 +17,7 @@
 .native-shell {
   padding: 0;
   display: block;
-  background: #171817;
+  background: #121212;
 }
 
 .native-shell .app-frame {
@@ -805,6 +805,8 @@ input {
   border-radius: 50%;
   display: grid;
   place-items: center;
+  background: transparent;
+  overflow: hidden;
 }
 
 .frequents-card {
@@ -945,7 +947,7 @@ input {
   padding: 8px 12px 24px; /* Space for home indicator on mobile */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: #171817;
+  background: #121212;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
