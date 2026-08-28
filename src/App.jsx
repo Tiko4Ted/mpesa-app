@@ -442,9 +442,9 @@ function CustomerPanel({ onAuthChange }) {
         <div className="primary-actions">
           {quickActions.map(([label, IconOrImage, bg, color]) => (
             <button key={label} className="mpesa-action">
-              <span className="action-icon-circle" style={{ background: bg, color: color || undefined }}>
+              <span className="action-icon-circle" style={{ background: typeof IconOrImage === 'string' ? 'transparent' : bg, color: color || undefined, overflow: 'hidden' }}>
                 {typeof IconOrImage === 'string' ? (
-                  <img src={IconOrImage} alt={label} style={{ width: 32, height: 32, objectFit: 'contain' }} />
+                  <img src={IconOrImage} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                 ) : (
                   <IconOrImage size={32} strokeWidth={1.5} />
                 )}
