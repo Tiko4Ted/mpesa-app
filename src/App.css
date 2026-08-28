@@ -520,6 +520,10 @@ input {
   grid-template-columns: 44px minmax(0, 1fr) 42px 42px;
   align-items: center;
   gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #121212;
 }
 
 .native-shell .mpesa-home {
@@ -800,8 +804,8 @@ input {
 }
 
 .action-icon-circle {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: grid;
   place-items: center;
