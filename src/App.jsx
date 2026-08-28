@@ -5,7 +5,6 @@ import {
   Bell,
   ChevronRight,
   ChevronUp,
-  CreditCard,
   Eye,
   EyeOff,
   Home,
@@ -22,22 +21,12 @@ import {
   Smartphone,
   Trash2,
   UserRound,
-  Send,
-  ShoppingBasket,
-  ArrowDownToLine,
-  ArrowUpDown,
-  Phone,
-  Gift,
-  Wallet,
-  ScanLine,
   Grip
 } from 'lucide-react'
 import { api } from './api'
 import './App.css'
 import appIcon from '../assets/images/icon.png'
 import doMoreTiles from '../assets/images/icons/assets_images_icons_domoredark.png'
-import entertainmentBanner from '../assets/images/icons/assets_images_icons_entertainmentbannerdark.png'
-import financeBanner from '../assets/images/icons/assets_images_icons_financebannerdark.png'
 import sendIcon from '../assets/images/icons/assets_images_icons_iconsenddark.png'
 import lipaIcon from '../assets/images/icons/assets_images_icons_iconlipadark.png'
 import withdrawIcon from '../assets/images/icons/assets_images_icons_iconwithdrawdark.png'
@@ -47,6 +36,10 @@ import tunukiwaIcon from '../assets/images/icons/assets_images_icons_icontunukiw
 import intlIcon from '../assets/images/icons/assets_images_icons_iconintldark.png'
 import scanIcon from '../assets/images/icons/assets_images_icons_scanicon.png'
 import frequentsIcon from '../assets/images/icons/assets_images_icons_frequentsicondark.png'
+import nyotaIcon from '../assets/images/icons/icon_nyota.png'
+import transactIcon from '../assets/images/icons/icon_transact.png'
+import servicesIcon from '../assets/images/icons/icon_services.png'
+import zuriIcon from '../assets/images/icons/assets_images_icons_zuriicon.png'
 const NATIVE_BUILD = import.meta.env.VITE_NATIVE_BUILD === 'true';
 
 const emptyAccount = {
@@ -219,20 +212,20 @@ function CustomerPanel({ onAuthChange }) {
   const [error, setError] = useState('');
 
   const quickActions = [
-    ['Send\nMoney', sendIcon, '#3a1f1e', false],
-    ['Lipa na\nM-PESA', lipaIcon, '#1e2b24', false],
-    ['Withdraw\nMoney', withdrawIcon, '#1e2b24', false],
-    ['Buy\nBundles', bundlesIcon, '#3a1f1e', false],
-    ['Airtime\nTop up', airtimeIcon, '#1e2b24', false],
-    ['Bonga\nLoyalty', tunukiwaIcon, '#1e2b24', false],
-    ['Pochi\nWallet', intlIcon, '#1e2b24', false],
-    ['Add\nAction', Plus, '#2b2d2c', '#a8adaa']
+    ['Send\nMoney', sendIcon, 'rgba(255,255,255,0.06)', false],
+    ['Lipa na\nM-PESA', lipaIcon, 'rgba(255,255,255,0.06)', false],
+    ['Withdraw\nMoney', withdrawIcon, 'rgba(255,255,255,0.06)', false],
+    ['Buy\nBundles', bundlesIcon, 'rgba(255,255,255,0.06)', false],
+    ['Airtime\nTop up', airtimeIcon, 'rgba(255,255,255,0.06)', false],
+    ['Bonga\nLoyalty', tunukiwaIcon, 'rgba(255,255,255,0.06)', false],
+    ['Pochi\nWallet', intlIcon, 'rgba(255,255,255,0.06)', false],
+    ['Add\nAction', Plus, 'rgba(255,255,255,0.06)', '#a8adaa']
   ];
 
   const frequentApps = [
-    ['Hustler Fund', Grip, '#444'],
+    ['Hustler Fund', Grip, '#21b84f'],
     ['M-Shwari', frequentsIcon, 'transparent'],
-    ['Nyota', Grip, '#8a5a3a'],
+    ['Nyota', nyotaIcon, 'transparent'],
     ['M-Pesa', appIcon, 'transparent']
   ];
 
@@ -281,13 +274,6 @@ function CustomerPanel({ onAuthChange }) {
         pin: next
       });
     }
-  };
-
-  const signOut = () => {
-    setCustomerToken('');
-    setAccount(null);
-    setPin('');
-    onAuthChange(false);
   };
 
   useEffect(() => {
@@ -508,10 +494,14 @@ function CustomerPanel({ onAuthChange }) {
       </div>
       <img className="discover-tiles" src={doMoreTiles} alt="Explore and discover deals" />
 
+      <div className="zuri-fab">
+        <img src={zuriIcon} alt="Ask Zuri" />
+      </div>
+
       <div className="bottom-tabs" aria-label="App sections">
         <button className="active"><Home size={22} /><span>Home</span></button>
-        <button><Banknote size={22} /><span>Transact</span></button>
-        <button><ReceiptText size={22} /><span>Services</span></button>
+        <button><img src={transactIcon} alt="" style={{width: 22, height: 22}} /><span>Transact</span></button>
+        <button><img src={servicesIcon} alt="" style={{width: 22, height: 22}} /><span>Services</span></button>
         <button><List size={22} /><span>Grow</span></button>
       </div>
     </section>
